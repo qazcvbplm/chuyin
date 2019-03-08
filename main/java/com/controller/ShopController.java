@@ -1,34 +1,28 @@
 package com.controller;
 
-import java.io.File;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-
-import com.dto.ShopTj;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.dto.SenderTj;
+import com.dto.ShopTj;
 import com.entity.FullCut;
 import com.entity.School;
 import com.entity.Shop;
 import com.entity.ShopOpenTime;
+import com.feign.AuthController;
 import com.service.SchoolService;
 import com.service.ShopService;
 import com.util.ResponseObject;
 import com.util.Util;
 import com.wxutil.WXUtil;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import java.io.File;
+import java.util.List;
 
 @RestController
 @Api(tags="店铺模块")
@@ -39,6 +33,8 @@ public class ShopController {
 	private ShopService shopService;
 	@Autowired
 	private SchoolService schoolService;
+    @Autowired
+    private AuthController auth;
 	/* @Value("${barcode.path}")
 	private  String barcodepath;*/
 	
@@ -116,7 +112,9 @@ public class ShopController {
 	@ApiOperation(value="店铺登录",httpMethod="POST")
 	@PostMapping("android/login")
 	public ResponseObject android_login(HttpServletRequest request,HttpServletResponse response,String loginName,String loginPassWord){
-		     return new ResponseObject(true, "ok").push("msg", Util.toJson(shopService.login(loginName,loginPassWord)));
+        Shop shop = shopService.login(loginName, loginPassWord);
+        String token = auth.getToken(shop.getId() + "", shop.getShopLoginName(), "android");
+        return new ResponseObject(true, "ok").push("msg", Util.toJson(shop)).push("token", token);
 	}
 	
 	@ApiOperation(value="店铺营业开关",httpMethod="POST")
