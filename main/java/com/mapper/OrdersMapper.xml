@@ -275,5 +275,11 @@
   <update id="cancel" parameterType="string">
     update orders set status='已取消' where status !='已取消' and id=#{id}
   </update>
+
+
+    <select id="shopsta" resultMap="BaseResultMap" parameterType="map">
+        select (select count(*) from orders where shop_id = #{shopId} and status !='待付款') as remark,sum(box_price) as box_pirce ,sum(send_price) as send_price,sum(pay_price) as pay_price,count(*) as floor_id,sum(shop_get_total) as shop_get_total
+        from orders o,orders_complete oc where oc.order_id=o.id and o.shop_id = #{shopId} and o.create_time between #{beginTime} and #{endTime} and o.status='已完成'
+    </select>
   
 </mapper>

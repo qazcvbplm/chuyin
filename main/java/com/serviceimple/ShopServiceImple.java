@@ -1,21 +1,19 @@
 package com.serviceimple;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.validation.Valid;
 
+import com.dao.*;
+import com.dto.ShopTj;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.dao.FullCutMapper;
-import com.dao.ProductMapper;
-import com.dao.RunOrdersMapper;
-import com.dao.ShopMapper;
-import com.dao.ShopOpenTimeMapper;
 import com.dto.SenderTj;
 import com.entity.FullCut;
 import com.entity.Orders;
@@ -39,6 +37,8 @@ public class ShopServiceImple implements ShopService{
 	private ProductMapper productMapper;
 	@Autowired
 	private ShopOpenTimeMapper shopOpenTimeMapper;
+	@Autowired
+	private OrdersMapper ordersMapper;
 
 	@Override
 	public void add(Shop shop) {
@@ -163,5 +163,19 @@ public class ShopServiceImple implements ShopService{
 		QueryWrapper<ShopOpenTime> query=new QueryWrapper<>();
 		query.eq("shop_id", shopId);
 		return shopOpenTimeMapper.selectPage(new Page<>(1, 100),query).getRecords();
+	}
+
+	@Override
+	public ShopTj shopstatistics(Integer shopId, String beginTime, String endTime) {
+		Map<String,Object> map=new HashMap<>();
+		map.put("shopId", shopId);
+		map.put("beginTime", beginTime);
+		map.put("endTime", endTime);
+		List<Orders> list=ordersMapper.shopsta(map);
+		if(list.size()>0){
+           Orders temp=list.get(0);
+           ShopTj rs=new ShopTj(Integer.valueOf(temp.getRemark()),temp.getFloorId(),temp.getPayPrice(),temp.getComplete().getShopGetTotal(),temp.getBoxPrice(),temp.getSendPrice());
+		}
+		return new ShopTj(0,0,new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0));
 	}
 }

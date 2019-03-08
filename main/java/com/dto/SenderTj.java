@@ -1,8 +1,9 @@
 package com.dto;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class SenderTj {
+public class SenderTj implements Serializable {
 
 	private Integer total;
 	

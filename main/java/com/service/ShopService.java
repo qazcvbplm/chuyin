@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import com.dto.SenderTj;
+import com.dto.ShopTj;
 import com.entity.FullCut;
 import com.entity.Shop;
 import com.entity.ShopOpenTime;
@@ -39,4 +40,5 @@ public interface ShopService {
 
 	List<ShopOpenTime> findOpenTime(int shopId);
 
+    ShopTj shopstatistics(Integer shopId, String beginTime, String endTime);
 }

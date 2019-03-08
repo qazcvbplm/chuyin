@@ -55,4 +55,5 @@ public interface OrdersMapper {
 
 	int countBySchoolId(int schoolId);
 
+    List<Orders> shopsta(Map<String, Object> map);
 }

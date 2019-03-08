@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import com.dto.ShopTj;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -131,10 +132,18 @@ public class ShopController {
 	
 	@ApiOperation(value="商家临时统计",httpMethod="POST")
 	@PostMapping("nocheck/shoptempstatistics")
-	public ResponseObject senderstatistics(HttpServletRequest request,HttpServletResponse response,
+	public ResponseObject shoptempstatistics(HttpServletRequest request,HttpServletResponse response,
 			@RequestParam Integer shopId,@RequestParam String beginTime,@RequestParam String endTime){
 		                  SenderTj result=shopService.statistics(shopId,beginTime,endTime);
 		                  return new ResponseObject(true, "ok").push("result", result);
+	}
+
+	@ApiOperation(value="商家统计",httpMethod="POST")
+	@PostMapping("nocheck/shopstatistics")
+	public ResponseObject shopstatistics(HttpServletRequest request,HttpServletResponse response,
+										   @RequestParam Integer shopId,@RequestParam String beginTime,@RequestParam String endTime){
+		ShopTj result=shopService.shopstatistics(shopId,beginTime,endTime);
+		return new ResponseObject(true, "ok").push("result", result);
 	}
 	
 	
