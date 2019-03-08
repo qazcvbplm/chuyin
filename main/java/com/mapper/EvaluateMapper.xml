@@ -12,6 +12,12 @@
   <sql id="Base_Column_List">
     Id, orderId, content, core, create_time
   </sql>
+
+  <select id="findByShopId" resultMap="BaseResultMap" parameterType="int">
+
+    select * from evaluate,orders where orders.id=evaluate.orderId AND orders.shop_id=#{shopId}
+  </select>
+
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />

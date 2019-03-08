@@ -1,10 +1,8 @@
 package com.dao;
 
-import java.util.List;
-
-import org.apache.ibatis.annotations.Mapper;
-
 import com.entity.Evaluate;
+
+import java.util.List;
 public interface EvaluateMapper {
     int insert(Evaluate record);
 
@@ -19,4 +17,6 @@ public interface EvaluateMapper {
 	List<Evaluate> find(Evaluate evaluate);
 
 	int count(Evaluate evaluate);
+
+    List<Evaluate> findByShopId(int i);
 }
