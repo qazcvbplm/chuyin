@@ -279,7 +279,7 @@
 
     <select id="shopsta" resultMap="BaseResultMap" parameterType="map">
         select (select count(*) from orders where shop_id = #{shopId} and status !='待付款') as remark,sum(box_price) as box_pirce ,sum(send_price) as send_price,sum(pay_price) as pay_price,count(*) as floor_id,sum(shop_get_total) as shop_get_total
-        from orders o,orders_complete oc where oc.order_id=o.id and o.shop_id = #{shopId} and o.create_time between #{beginTime} and #{endTime} and o.status='已完成'
+        from orders o left join orders_complete oc on oc.order_id=o.id where o.shop_id = #{shopId} and o.create_time between #{beginTime} and #{endTime} and o.status='已完成'
     </select>
   
 </mapper>
