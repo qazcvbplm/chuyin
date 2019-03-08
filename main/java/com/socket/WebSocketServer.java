@@ -19,7 +19,7 @@ public class WebSocketServer {
     //静态变量，用来记录当前在线连接数。应该把它设计成线程安全的。
     private static int onlineCount = 0;
 
-    private static Map<Integer, WebSocketServer> webSocketSet = new HashMap<>();
+    public static Map<Integer, WebSocketServer> webSocketSet = new HashMap<>();
 
     private int id;
 
