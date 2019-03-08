@@ -1,16 +1,5 @@
 package com.redis.message;
 
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.dao.MqttMapper;
 import com.dao.SchoolMapper;
 import com.entity.Mqtt;
@@ -18,6 +7,12 @@ import com.entity.School;
 import com.entity.TxLog;
 import com.util.LoggerUtil;
 import com.wx.towallet.WeChatPayUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class SchoolListener
@@ -36,7 +31,7 @@ public class SchoolListener
   
   public void receiveMessage(String message)
   {
-	  Mqtt mqtt=mqttMapper.selectById(1);
+      Mqtt mqtt = mqttMapper.selectById(1);
     String[] params = message.split(",");
     if (params[0].equals("addmoney"))
     {
