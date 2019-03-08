@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.EvaluateMapper">
+  <resultMap id="BaseResultMap" type="com.entity.Evaluate">
+    <id column="Id" jdbcType="INTEGER" property="id" />
+    <result column="orderId" jdbcType="VARCHAR" property="orderid" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="core" jdbcType="INTEGER" property="core" />
+     <result column="school_id" jdbcType="INTEGER" property="schoolId" />
+    <result column="create_time" jdbcType="VARCHAR" property="createTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    Id, orderId, content, core, create_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from evaluate
+    where Id = #{id,jdbcType=INTEGER}
+  </select>
+  <insert id="insert" parameterType="com.entity.Evaluate">
+    insert into evaluate (Id, orderId, content, 
+      core,school_id)
+    values (#{id,jdbcType=INTEGER}, #{orderid,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, 
+      #{core,jdbcType=INTEGER},#{schoolId,jdbcType=INTEGER})
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.entity.Evaluate">
+    update evaluate
+    <set>
+      <if test="orderid != null">
+        orderId = #{orderid,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="core != null">
+        core = #{core,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where Id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <select id="find" resultMap="BaseResultMap"  parameterType="com.entity.Evaluate">
+    select * from evaluate
+    <where>
+       <if test="schoolId != null">
+        school_id = #{schoolId,jdbcType=INTEGER}
+      </if>
+    </where>
+	      order by create_time desc
+	    <if test="page!=null and size!=null">
+	      limit #{page},#{size}
+	    </if>
+  </select>
+  
+  <select id="count" resultType="int"  parameterType="com.entity.Evaluate">
+    select count(*) from evaluate where school_id =#{schoolId}
+  </select>
+</mapper>

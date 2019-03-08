@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.SenderMapper">
+  <resultMap id="BaseResultMap" type="com.entity.Sender">
+    <id column="Id" jdbcType="INTEGER" property="id" />
+    <result column="open_id" jdbcType="VARCHAR" property="openId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="class_no" jdbcType="VARCHAR" property="classNo" />
+    <result column="exam" jdbcType="VARCHAR" property="exam" />
+    <result column="rate" jdbcType="DECIMAL" property="rate" />
+    <result column="takeout_flag" jdbcType="INTEGER" property="takeoutFlag" />
+     <result column="school_id" jdbcType="INTEGER" property="schoolId" />
+    <result column="run_flag" jdbcType="INTEGER" property="runFlag" />
+    <result column="shop_ids" jdbcType="VARCHAR" property="shopIds" />
+    <result column="floor_ids" jdbcType="VARCHAR" property="floorIds" />
+  </resultMap>
+  
+  <select id="finddsh" parameterType="int" resultType="int">
+     select count(*) from sender where exam='待审核' and school_id=#{schoolId}
+  </select>
+  <select id="check" parameterType="string" resultMap="BaseResultMap">
+    select * from sender where open_id = #{openId}
+  </select>
+  <select id="find" resultMap="BaseResultMap" parameterType="com.entity.Sender">
+     select 
+	 *
+	from sender
+     <where>
+       <if test="schoolId!=null">
+       school_id=#{schoolId}
+       </if>
+      <if test="openId!=null">
+       and open_id=#{openId}
+       </if>
+        <if test="exam!=null">
+       and exam!=#{exam}
+       </if>
+        <if test="phone!=null">
+       and phone=#{phone}
+       </if>
+        <if test="name!=null">
+       and name=#{name}
+       </if>
+     </where>
+      <if test="orderBy!=null">
+      order by #{orderBy}
+    </if>
+    <if test="page!=null and size!=null">
+      limit #{page},#{size}
+    </if>
+  </select>
+  <select id="count" resultType="int" parameterType="com.entity.Sender">
+     select 
+	 count(*)
+	from sender
+     <where>
+       <if test="schoolId!=null">
+       school_id=#{schoolId}
+       </if>
+      <if test="openId!=null">
+       and open_id=#{openId}
+       </if>
+        <if test="exam!=null">
+       and exam!=#{exam}
+       </if>
+        <if test="phone!=null">
+       and phone=#{phone}
+       </if>
+        <if test="name!=null">
+       and name=#{name}
+       </if>
+     </where>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    *
+    from sender
+    where Id = #{id,jdbcType=INTEGER}
+  </select>
+  <insert id="insert" parameterType="com.entity.Sender">
+    insert into sender ( open_id, name, 
+      phone, class_no,school_id)
+    values ( #{openId,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
+      #{phone,jdbcType=VARCHAR}, #{classNo,jdbcType=VARCHAR},#{schoolId})
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.entity.Sender">
+    update sender
+    <set>
+      <if test="exam != null">
+        exam = #{exam,jdbcType=VARCHAR},
+      </if>
+      <if test="rate != null">
+        rate = #{rate,jdbcType=DECIMAL},
+      </if>
+      <if test="phone != null">
+        phone = #{phone},
+      </if>
+      <if test="takeoutFlag != null">
+        takeout_flag = #{takeoutFlag,jdbcType=INTEGER},
+      </if>
+      <if test="runFlag != null">
+        run_flag = #{runFlag,jdbcType=INTEGER},
+      </if>
+      <if test="shopIds != null">
+        shop_ids = #{shopIds,jdbcType=VARCHAR},
+      </if>
+      <if test="floorIds != null">
+        floor_ids = #{floorIds,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where Id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

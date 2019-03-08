@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.DayLogTakeoutMapper">
+  <resultMap id="BaseResultMap" type="com.entity.DayLogTakeout">
+    <id column="Id" jdbcType="INTEGER" property="id" />
+    <result column="self_name" jdbcType="VARCHAR" property="selfName" />
+    <result column="self_id" jdbcType="INTEGER" property="selfId" />
+    <result column="day" jdbcType="VARCHAR" property="day" />
+    <result column="total_count" jdbcType="INTEGER" property="totalCount" />
+    <result column="total_price" jdbcType="DECIMAL" property="totalPrice" />
+    <result column="self_get" jdbcType="DECIMAL" property="selfGet" />
+    <result column="parent_get" jdbcType="DECIMAL" property="parentGet" />
+    <result column="takeout_total_count" jdbcType="INTEGER" property="takeoutTotalCount" />
+    <result column="selfget_total_count" jdbcType="INTEGER" property="selfgetTotalCount" />
+  </resultMap>
+</mapper>

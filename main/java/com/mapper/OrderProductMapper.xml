@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.OrderProductMapper">
+  <resultMap id="BaseResultMap" type="com.entity.OrderProduct">
+    <id column="Id" jdbcType="INTEGER" property="id" />
+     <result column="product_id" jdbcType="INTEGER" property="productId" />
+    <result column="product_name" jdbcType="VARCHAR" property="productName" />
+    <result column="product_image" jdbcType="VARCHAR" property="productImage" />
+    <result column="product_count" jdbcType="INTEGER" property="productCount" />
+    <result column="product_discount" jdbcType="DECIMAL" property="productDiscount" />
+    <result column="order_id" jdbcType="VARCHAR" property="orderId" />
+    <result column="total_price" jdbcType="DECIMAL" property="totalPrice" />
+    <result column="attribute_name" jdbcType="VARCHAR" property="attributeName" />
+    <result column="attribute_price" jdbcType="DECIMAL" property="attributePrice" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    Id, product_name, product_image, product_count, product_discount, order_id, total_price, 
+    attribute_name, attribute_price
+  </sql>
+  <select id="findByOrderId" parameterType="String" resultMap="BaseResultMap">
+    select 
+    *
+    from order_product
+    where order_id=#{id}
+  </select>
+  <insert id="insert" parameterType="com.entity.OrderProduct">
+    insert into order_product (Id, product_name, product_image, 
+      product_count, product_discount, order_id, 
+      total_price, attribute_name, attribute_price,product_id
+      )
+    values (#{id,jdbcType=INTEGER}, #{productName,jdbcType=VARCHAR}, #{productImage,jdbcType=VARCHAR}, 
+      #{productCount,jdbcType=INTEGER}, #{productDiscount,jdbcType=DECIMAL}, #{orderId,jdbcType=VARCHAR}, 
+      #{totalPrice,jdbcType=DECIMAL}, #{attributeName,jdbcType=VARCHAR}, #{attributePrice,jdbcType=DECIMAL},#{productId}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.entity.OrderProduct">
+    insert into order_product
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        Id,
+      </if>
+      <if test="productName != null">
+        product_name,
+      </if>
+      <if test="productImage != null">
+        product_image,
+      </if>
+      <if test="productCount != null">
+        product_count,
+      </if>
+      <if test="productDiscount != null">
+        product_discount,
+      </if>
+      <if test="orderId != null">
+        order_id,
+      </if>
+      <if test="totalPrice != null">
+        total_price,
+      </if>
+      <if test="attributeName != null">
+        attribute_name,
+      </if>
+      <if test="attributePrice != null">
+        attribute_price,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="productName != null">
+        #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="productImage != null">
+        #{productImage,jdbcType=VARCHAR},
+      </if>
+      <if test="productCount != null">
+        #{productCount,jdbcType=INTEGER},
+      </if>
+      <if test="productDiscount != null">
+        #{productDiscount,jdbcType=DECIMAL},
+      </if>
+      <if test="orderId != null">
+        #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="totalPrice != null">
+        #{totalPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="attributeName != null">
+        #{attributeName,jdbcType=VARCHAR},
+      </if>
+      <if test="attributePrice != null">
+        #{attributePrice,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.entity.OrderProduct">
+    update order_product
+    <set>
+      <if test="productName != null">
+        product_name = #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="productImage != null">
+        product_image = #{productImage,jdbcType=VARCHAR},
+      </if>
+      <if test="productCount != null">
+        product_count = #{productCount,jdbcType=INTEGER},
+      </if>
+      <if test="productDiscount != null">
+        product_discount = #{productDiscount,jdbcType=DECIMAL},
+      </if>
+      <if test="orderId != null">
+        order_id = #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="totalPrice != null">
+        total_price = #{totalPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="attributeName != null">
+        attribute_name = #{attributeName,jdbcType=VARCHAR},
+      </if>
+      <if test="attributePrice != null">
+        attribute_price = #{attributePrice,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where Id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.entity.OrderProduct">
+    update order_product
+    set product_name = #{productName,jdbcType=VARCHAR},
+      product_image = #{productImage,jdbcType=VARCHAR},
+      product_count = #{productCount,jdbcType=INTEGER},
+      product_discount = #{productDiscount,jdbcType=DECIMAL},
+      order_id = #{orderId,jdbcType=VARCHAR},
+      total_price = #{totalPrice,jdbcType=DECIMAL},
+      attribute_name = #{attributeName,jdbcType=VARCHAR},
+      attribute_price = #{attributePrice,jdbcType=DECIMAL}
+    where Id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

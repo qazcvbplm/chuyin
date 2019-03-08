@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.ChargeLogMapper">
+  <resultMap id="BaseResultMap" type="com.entity.ChargeLog">
+    <id column="Id" jdbcType="VARCHAR" property="id" />
+    <result column="pay" jdbcType="DECIMAL" property="pay" />
+    <result column="send" jdbcType="DECIMAL" property="send" />
+    <result column="open_id" jdbcType="VARCHAR" property="openId" />
+     <result column="app_id"  property="appId" />
+    <result column="create_time" jdbcType="VARCHAR" property="createTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    Id, pay, send, open_id, create_time
+  </sql>
+   <select id="tj" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    sum(pay) as pay,sum(send) as send
+    from charge_log where app_id =#{appId}
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from charge_log
+    where Id = #{id,jdbcType=INTEGER}
+  </select>
+  <insert id="insert" parameterType="com.entity.ChargeLog">
+    insert into charge_log (Id, pay, send, 
+      open_id, create_time,app_id)
+    values (#{id,jdbcType=VARCHAR}, #{pay,jdbcType=DECIMAL}, #{send,jdbcType=DECIMAL}, 
+      #{openId,jdbcType=VARCHAR}, now(),#{appId})
+  </insert>
+  
+  <select id="findByOpenId" resultMap="BaseResultMap"  parameterType="string">
+    select * from charge_log where open_id = #{openId}
+  </select>
+  <select id="surplus" parameterType="int" resultType="BigDecimal">
+   select sum(money) from wx_user,wx_user_bell where wx_user.app_id=#{appId} and wx_user_bell.phone=concat(wx_user.open_id,'-',wx_user.phone)
+  </select>
+</mapper>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.WxUserBellMapper">
+  <resultMap id="BaseResultMap" type="com.entity.WxUserBell">
+    <id column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="source" jdbcType="INTEGER" property="source" />
+    <result column="money" jdbcType="DECIMAL" property="money" />
+    <result column="is_vip" jdbcType="INTEGER" property="isVip" />
+    <result column="vip_out_time" jdbcType="BIGINT" property="vipOutTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    phone, source, money, is_vip, vip_out_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    *
+    from wx_user_bell
+    where phone = #{phone,jdbcType=VARCHAR}
+  </select>
+  <insert id="insert" parameterType="com.entity.WxUserBell">
+    insert into wx_user_bell (phone)
+    values (#{phone,jdbcType=VARCHAR})
+  </insert>
+   <update id="addSource" parameterType="map" >
+   update wx_user_bell set source = source+#{source} where phone=#{phone} 
+  </update>
+  
+  <update id="paySource" parameterType="map" >
+   update wx_user_bell set source = source-#{source} where phone=#{phone} and source >= #{source}
+  </update>
+  
+  <update id="pay" parameterType="map" >
+   update wx_user_bell set money = money-#{amount} where phone=#{phone} and money >= #{amount}
+  </update>
+  
+  <update id="charge" parameterType="map">
+  update wx_user_bell set money = money+#{amount} where phone=#{phone}
+  </update>
+  
+  <select id="findByPhone" parameterType="string" resultType="int">
+   select count(*) from wx_user_bell where phone=#{phone}
+  </select>
+</mapper>

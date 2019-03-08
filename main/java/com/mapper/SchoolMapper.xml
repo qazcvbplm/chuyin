@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.SchoolMapper">
+  <resultMap id="BaseResultMap" type="com.entity.School">
+    <id column="Id" jdbcType="INTEGER" property="id" />
+     <result column="app_id" jdbcType="INTEGER" property="appId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+     <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="login_name" jdbcType="VARCHAR" property="loginName" />
+    <result column="login_pass_word" jdbcType="VARCHAR" property="loginPassWord" />
+    <result column="rate" jdbcType="DECIMAL" property="rate" />
+    <result column="money" jdbcType="DECIMAL" property="money" />
+    <result column="sort" jdbcType="BIGINT" property="sort" />
+    <result column="sender_money" jdbcType="DECIMAL" property="senderMoney" />
+     <result column="top_down" jdbcType="DECIMAL" property="topDown" />
+    <result column="send_max_distance" jdbcType="INTEGER" property="sendMaxDistance" />
+    <result column="send_per_out" jdbcType="INTEGER" property="sendPerOut" />
+    <result column="send_per_money" jdbcType="DECIMAL" property="sendPerMoney" />
+    <result column="wx_app_id" jdbcType="VARCHAR" property="wxAppId" />
+    <result column="wx_secret" jdbcType="VARCHAR" property="wxSecret" />
+    <result column="mch_id" jdbcType="VARCHAR" property="mchId" />
+    <result column="wx_pay_id" jdbcType="VARCHAR" property="wxPayId" />
+     <result column="cert_path" jdbcType="VARCHAR" property="certPath" />
+    <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
+     <result column="enable_takeout" jdbcType="INTEGER" property="enableTakeout" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  
+   <update id="tx" parameterType="map">
+   update school set money=money-#{amount} where id=#{schoolId} and money >= #{amount}
+  </update>
+  
+  <update id="sendertx" parameterType="map">
+   update school set sender_money=sender_money-#{amount} where id=#{schoolId}
+  </update>
+  
+  <update id="endOrder"  parameterType="map">
+  update school set money=money+#{money},sender_money=sender_money+#{sendMoney} where id=#{schoolId}
+  </update>
+  
+  <select id="login" resultMap="BaseResultMap"  parameterType="com.entity.School">
+   select * from school where login_name=#{loginName} and login_pass_word=#{loginPassWord}
+  </select>
+  <select id="find" resultMap="BaseResultMap" parameterType="com.entity.School">
+    select 
+     *
+     from school
+    <where>
+      <if test="id!=null">
+         id =#{id}
+      </if>
+      <if test="appId!=null">
+         and app_id =#{appId}
+      </if>
+      <if test="wxAppId!=null">
+         and wx_app_id =#{wxAppId}
+      </if>
+      <if test="name!=null">
+         and name =#{name}
+      </if>
+      and is_delete=0
+    </where>
+    <if test="orderBy!=null">
+      order by #{orderBy}
+    </if>
+    <if test="page!=null and size!=null">
+      limit #{page},#{size}
+    </if>
+  </select>
+  
+  <select id="findByLoginName" resultMap="BaseResultMap" parameterType="string">
+    select * from school where login_name=#{loginName}
+  </select>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    *
+    from school
+    where Id = #{id,jdbcType=INTEGER}
+  </select>
+  <insert id="insert" parameterType="com.entity.School">
+    insert into school (Id,app_id, name, login_name, 
+      login_pass_word, rate, send_max_distance, 
+      send_per_out, send_per_money, wx_app_id, 
+      wx_secret, mch_id, wx_pay_id,sort,cert_path,top_down,enable_takeout,phone)
+    values (#{id,jdbcType=INTEGER},#{appId}, #{name,jdbcType=VARCHAR}, #{loginName,jdbcType=VARCHAR}, 
+      #{loginPassWord,jdbcType=VARCHAR}, #{rate,jdbcType=DECIMAL}, #{sendMaxDistance,jdbcType=INTEGER}, 
+      #{sendPerOut,jdbcType=INTEGER}, #{sendPerMoney,jdbcType=DECIMAL}, #{wxAppId,jdbcType=VARCHAR}, 
+      #{wxSecret,jdbcType=VARCHAR}, #{mchId,jdbcType=VARCHAR}, #{wxPayId,jdbcType=VARCHAR},#{sort,jdbcType=VARCHAR},#{certPath,jdbcType=VARCHAR},
+      #{topDown},#{enableTakeout},#{phone})
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.entity.School">
+    update school
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="loginName != null">
+        login_name = #{loginName,jdbcType=VARCHAR},
+      </if>
+      <if test="loginPassWord != null">
+        login_pass_word = #{loginPassWord,jdbcType=VARCHAR},
+      </if>
+      <if test="rate != null">
+        rate = #{rate,jdbcType=DECIMAL},
+      </if>
+      <if test="sort != null">
+        sort = #{sort,jdbcType=BIGINT},
+      </if>
+      <if test="sendMaxDistance != null">
+        send_max_distance = #{sendMaxDistance,jdbcType=INTEGER},
+      </if>
+      <if test="sendPerOut != null">
+        send_per_out = #{sendPerOut,jdbcType=INTEGER},
+      </if>
+      <if test="sendPerMoney != null">
+        send_per_money = #{sendPerMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="wxAppId != null">
+        wx_app_id = #{wxAppId,jdbcType=VARCHAR},
+      </if>
+      <if test="wxSecret != null">
+        wx_secret = #{wxSecret,jdbcType=VARCHAR},
+      </if>
+       <if test="certPath != null">
+        cert_path = #{certPath,jdbcType=VARCHAR},
+      </if>
+      <if test="mchId != null">
+        mch_id = #{mchId,jdbcType=VARCHAR},
+      </if>
+      <if test="wxPayId != null">
+        wx_pay_id = #{wxPayId,jdbcType=VARCHAR},
+      </if>
+      <if test="isDelete != null">
+        is_delete = #{isDelete,jdbcType=INTEGER},
+      </if>
+        <if test="topDown!= null">
+        top_down = #{topDown},
+      </if>
+       <if test="enableTakeout!= null">
+        enable_takeout = #{enableTakeout},
+      </if>
+        <if test="phone!= null">
+        phone = #{phone},
+      </if>
+    </set>
+    where Id = #{id,jdbcType=INTEGER}
+  </update>
+ 
+</mapper>

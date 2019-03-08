@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.ProductMapper">
+  <resultMap id="BaseResultMap" type="com.entity.Product">
+    <id column="Id" jdbcType="INTEGER" property="id" />
+    <result column="product_name" jdbcType="VARCHAR" property="productName" />
+    <result column="product_image" jdbcType="VARCHAR" property="productImage" />
+    <result column="discount" jdbcType="DECIMAL" property="discount" />
+    <result column="box_price_flag" jdbcType="INTEGER" property="boxPriceFlag" />
+    <result column="product_category_id" jdbcType="INTEGER" property="productCategoryId" />
+    <result column="shop_id" jdbcType="INTEGER" property="shopId" />
+    <result column="school_id" jdbcType="INTEGER" property="schoolId" />
+    <result column="sale" jdbcType="INTEGER" property="sale" />
+    <result column="is_show" jdbcType="INTEGER" property="isShow" />
+    <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
+    <collection property="attribute" ofType="com.entity.ProductAttribute"  javaType="ArrayList">
+        <result column="aid" jdbcType="INTEGER" property="id" />
+	    <result column="product_id" jdbcType="INTEGER" property="productId" />
+	    <result column="name" jdbcType="VARCHAR" property="name" />
+	    <result column="price" jdbcType="DECIMAL" property="price" />
+    </collection>
+  </resultMap>
+  <update id="sale" parameterType="map">
+  update  product set sale=sale+#{count} where id=#{id}
+  </update>
+  
+  <select id="minDiscount" parameterType="int" resultType="BigDecimal">
+   select min(discount) from product where shop_id=#{id} and is_delete=0 and is_show=1 and discount!=1
+  </select>
+  
+  <select id="findByShopAllDiscount" parameterType="int" resultMap="BaseResultMap">
+   select product.*,product_attribute.name,product_attribute.price,product_attribute.id  aid from product left join product_attribute  on product.id = product_attribute.product_id
+   where  
+         shop_id =#{productCategoryId} 
+         and product.is_delete=0  and product.is_show=1 and discount!=1
+         order by sale desc
+  </select>
+   <select id="findByCategoryId_wxUser" parameterType="int" resultMap="BaseResultMap">
+   select product.*,product_attribute.name,product_attribute.price,product_attribute.id  aid from product left join product_attribute  on product.id = product_attribute.product_id
+   where  
+         product_category_id =#{productCategoryId} 
+         and product.is_delete=0  and product.is_show=1
+          order by sale desc
+  </select>
+  <select id="findByCategoryId" parameterType="int" resultMap="BaseResultMap">
+   select product.*,product_attribute.name,product_attribute.price,product_attribute.id  aid from product left join product_attribute  on product.id = product_attribute.product_id
+   where  
+         product_category_id =#{productCategoryId} 
+         and product.is_delete=0 
+          order by sale desc
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    *
+    from product
+    where Id = #{id,jdbcType=INTEGER}
+  </select>
+  <insert id="insert" parameterType="com.entity.Product" useGeneratedKeys="true" keyProperty="id">
+    insert into product ( product_name, product_image, 
+      discount, box_price_flag, product_category_id, 
+      shop_id, school_id, sale, 
+      is_show)
+    values ( #{productName,jdbcType=VARCHAR}, #{productImage,jdbcType=VARCHAR}, 
+      #{discount,jdbcType=DECIMAL}, #{boxPriceFlag,jdbcType=INTEGER}, #{productCategoryId,jdbcType=INTEGER}, 
+      #{shopId,jdbcType=INTEGER}, #{schoolId,jdbcType=INTEGER}, #{sale,jdbcType=INTEGER}, 
+      #{isShow,jdbcType=INTEGER})
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.entity.Product">
+    update product
+    <set>
+      <if test="productName != null">
+        product_name = #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="productImage != null">
+        product_image = #{productImage,jdbcType=VARCHAR},
+      </if>
+      <if test="discount != null">
+        discount = #{discount,jdbcType=DECIMAL},
+      </if>
+      <if test="boxPriceFlag != null">
+        box_price_flag = #{boxPriceFlag,jdbcType=INTEGER},
+      </if>
+      <if test="productCategoryId != null">
+        product_category_id = #{productCategoryId,jdbcType=INTEGER},
+      </if>
+      <if test="shopId != null">
+        shop_id = #{shopId,jdbcType=INTEGER},
+      </if>
+      <if test="schoolId != null">
+        school_id = #{schoolId,jdbcType=INTEGER},
+      </if>
+      <if test="sale != null">
+        sale = #{sale,jdbcType=INTEGER},
+      </if>
+      <if test="isShow != null">
+        is_show = #{isShow,jdbcType=INTEGER},
+      </if>
+      <if test="isDelete != null">
+        is_delete = #{isDelete,jdbcType=INTEGER},
+      </if>
+    </set>
+    where Id = #{id,jdbcType=INTEGER}
+  </update>
+ 
+</mapper>

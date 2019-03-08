@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.SignMapper">
+  <resultMap id="BaseResultMap" type="com.entity.Sign">
+    <id column="Id" jdbcType="INTEGER" property="id" />
+    <result column="open_id" jdbcType="VARCHAR" property="openId" />
+    <result column="day" jdbcType="INTEGER" property="day" />
+    <result column="source" jdbcType="INTEGER" property="source" />
+     <result column="indexs" jdbcType="INTEGER" property="indexs" />
+  </resultMap>
+  
+  <select id="findLast" resultType="com.entity.Sign" parameterType="string">
+     select * from sign where open_id=#{openId} order by create_time desc limit 1
+  </select>
+</mapper>

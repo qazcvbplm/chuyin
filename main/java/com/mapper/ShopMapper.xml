@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.ShopMapper">
+  <resultMap id="BaseResultMap" type="com.entity.Shop">
+    <id column="Id" jdbcType="INTEGER" property="id" />
+    <result column="school_id" jdbcType="INTEGER" property="schoolId" />
+    <result column="shop_name" jdbcType="VARCHAR" property="shopName" />
+    <result column="shop_phone" jdbcType="VARCHAR" property="shopPhone" />
+    <result column="shop_image" jdbcType="VARCHAR" property="shopImage" />
+    <result column="shop_category_id" jdbcType="INTEGER" property="shopCategoryId" />
+    <result column="open_flag" jdbcType="INTEGER" property="openFlag" />
+    <result column="send_model_flag" jdbcType="INTEGER" property="sendModelFlag" />
+    <result column="get_model_flag" jdbcType="INTEGER" property="getModelFlag" />
+    <result column="score" jdbcType="INTEGER" property="score" />
+    <result column="start_price" jdbcType="DECIMAL" property="startPrice" />
+    <result column="box_price" jdbcType="DECIMAL" property="boxPrice" />
+    <result column="send_price" jdbcType="DECIMAL" property="sendPrice" />
+    <result column="send_time" jdbcType="VARCHAR" property="sendTime" />
+    <result column="top_title" jdbcType="VARCHAR" property="topTitle" />
+    <result column="shop_login_name" jdbcType="VARCHAR" property="shopLoginName" />
+    <result column="shop_login_pass_word" jdbcType="VARCHAR" property="shopLoginPassWord" />
+    <result column="shop_address" jdbcType="VARCHAR" property="shopAddress" />
+    <result column="rate" jdbcType="DECIMAL" property="rate" />
+    <result column="lat" jdbcType="VARCHAR" property="lat" />
+    <result column="lng" jdbcType="VARCHAR" property="lng" />
+    <result column="vip_discount_flag" jdbcType="INTEGER" property="vipDiscountFlag" />
+    <result column="send_price_add_by_count_flag" jdbcType="INTEGER" property="sendPriceAddByCountFlag" />
+    <result column="send_price_add" jdbcType="DECIMAL" property="sendPriceAdd" />
+    <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
+    <result column="sort" jdbcType="BIGINT" property="sort" />
+    <collection property="fullCut" ofType="com.entity.FullCut" select="com.dao.FullCutMapper.findByShop" column="id">
+    	<result column="full" jdbcType="INTEGER" property="full" />
+    	<result column="cut" jdbcType="INTEGER" property="cut" />
+    </collection>
+  </resultMap>
+  
+  <sql id="fd">
+  id,school_id,shop_name,shop_phone,shop_image,shop_category_id,send_model_flag,get_model_flag,score,start_price,box_price,send_price,send_time,top_title,shop_login_name,shop_login_pass_word,shop_address,rate,lat,lng,vip_discount_flag
+  ,send_price_add_by_count_flag,send_price_add,is_delete,sort
+  </sql>
+   <select id="count" resultType="int" parameterType="com.entity.Shop">
+    select count(*) from shop
+    <where>
+       <if test="schoolId != null">
+        and school_id = #{schoolId,jdbcType=INTEGER}
+      </if>
+       <if test="shopCategoryId != null">
+        and shop_category_id = #{shopCategoryId,jdbcType=INTEGER}
+      </if>
+        <if test="id != null">
+        and shop.id = #{id,jdbcType=INTEGER}
+      </if>
+      and shop.is_delete=0
+     </where>
+   </select>
+  <select id="find" resultMap="BaseResultMap" parameterType="com.entity.Shop">
+    select 
+	   <include refid="fd"></include>,if(shop.open_flag=1,
+	    (select count(*) from shop_open_time where shop_id = shop.id and DATE_FORMAT(now(),'%H:%i') between start_time and end_time),0) as open_flag
+	    from shop 
+     <where>
+       <if test="schoolId != null">
+        and school_id = #{schoolId,jdbcType=INTEGER}
+      </if>
+       <if test="shopCategoryId != null">
+        and shop_category_id = #{shopCategoryId,jdbcType=INTEGER}
+      </if>
+      <if test="id != null">
+        and shop.id = #{id,jdbcType=INTEGER}
+      </if>
+      and shop.is_delete=0
+     </where>
+      order by open_flag desc,sort desc
+    <if test="page!=null and size!=null">
+      limit #{page},#{size}
+    </if>
+  </select>
+  <select id="checkByLoginName" parameterType="string" resultMap="BaseResultMap" >
+    select * from shop where shop_login_name=#{shopLoginName}
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    *
+    from shop
+    where Id = #{id,jdbcType=INTEGER}
+  </select>
+  <insert id="insert" parameterType="com.entity.Shop">
+    insert into shop (school_id, shop_name, 
+      shop_phone, shop_image, shop_category_id, 
+      open_flag, send_model_flag, get_model_flag, 
+      score, start_price, box_price, 
+      send_price, send_time, top_title, 
+      shop_login_name, shop_login_pass_word, shop_address, 
+      rate, lat, lng, vip_discount_flag, 
+      send_price_add_by_count_flag, send_price_add, 
+      sort)
+    values ( #{schoolId,jdbcType=INTEGER}, #{shopName,jdbcType=VARCHAR}, 
+      #{shopPhone,jdbcType=VARCHAR}, #{shopImage,jdbcType=VARCHAR}, #{shopCategoryId,jdbcType=INTEGER}, 
+      #{openFlag,jdbcType=INTEGER}, #{sendModelFlag,jdbcType=INTEGER}, #{getModelFlag,jdbcType=INTEGER}, 
+      #{score,jdbcType=INTEGER}, #{startPrice,jdbcType=DECIMAL}, #{boxPrice,jdbcType=DECIMAL}, 
+      #{sendPrice,jdbcType=DECIMAL}, #{sendTime,jdbcType=VARCHAR}, #{topTitle,jdbcType=VARCHAR}, 
+      #{shopLoginName,jdbcType=VARCHAR}, #{shopLoginPassWord,jdbcType=VARCHAR}, #{shopAddress,jdbcType=VARCHAR}, 
+      #{rate,jdbcType=DECIMAL}, #{lat,jdbcType=VARCHAR}, #{lng,jdbcType=VARCHAR}, #{vipDiscountFlag,jdbcType=INTEGER}, 
+      #{sendPriceAddByCountFlag,jdbcType=INTEGER}, #{sendPriceAdd,jdbcType=DECIMAL}, 
+       #{sort,jdbcType=BIGINT})
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.entity.Shop">
+    update shop
+    <set>
+      <if test="shopName != null">
+        shop_name = #{shopName,jdbcType=VARCHAR},
+      </if>
+      <if test="shopPhone != null">
+        shop_phone = #{shopPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="shopImage != null">
+        shop_image = #{shopImage,jdbcType=VARCHAR},
+      </if>
+      <if test="shopCategoryId != null">
+        shop_category_id = #{shopCategoryId,jdbcType=INTEGER},
+      </if>
+      <if test="openFlag != null">
+        open_flag = #{openFlag,jdbcType=INTEGER},
+      </if>
+      <if test="sendModelFlag != null">
+        send_model_flag = #{sendModelFlag,jdbcType=INTEGER},
+      </if>
+      <if test="getModelFlag != null">
+        get_model_flag = #{getModelFlag,jdbcType=INTEGER},
+      </if>
+      <if test="score != null">
+        score = #{score,jdbcType=INTEGER},
+      </if>
+      <if test="startPrice != null">
+        start_price = #{startPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="boxPrice != null">
+        box_price = #{boxPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="sendPrice != null">
+        send_price = #{sendPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="sendTime != null">
+        send_time = #{sendTime,jdbcType=VARCHAR},
+      </if>
+      <if test="topTitle != null">
+        top_title = #{topTitle,jdbcType=VARCHAR},
+      </if>
+       <if test="shopLoginName != null">
+        shop_login_name = #{shopLoginName,jdbcType=VARCHAR},
+      </if>
+      <if test="shopLoginPassWord != null">
+        shop_login_pass_word = #{shopLoginPassWord,jdbcType=VARCHAR},
+      </if>
+      <if test="shopAddress != null">
+        shop_address = #{shopAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="rate != null">
+        rate = #{rate,jdbcType=DECIMAL},
+      </if>
+      <if test="lat != null">
+        lat = #{lat,jdbcType=VARCHAR},
+      </if>
+      <if test="lng != null">
+        lng = #{lng,jdbcType=VARCHAR},
+      </if>
+      <if test="vipDiscountFlag != null">
+        vip_discount_flag = #{vipDiscountFlag,jdbcType=INTEGER},
+      </if>
+      <if test="sendPriceAddByCountFlag != null">
+        send_price_add_by_count_flag = #{sendPriceAddByCountFlag,jdbcType=INTEGER},
+      </if>
+      <if test="sendPriceAdd != null">
+        send_price_add = #{sendPriceAdd,jdbcType=DECIMAL},
+      </if>
+      <if test="isDelete != null">
+        is_delete = #{isDelete,jdbcType=INTEGER},
+      </if>
+      <if test="sort != null">
+        sort = #{sort,jdbcType=BIGINT},
+      </if>
+    </set>
+    where Id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

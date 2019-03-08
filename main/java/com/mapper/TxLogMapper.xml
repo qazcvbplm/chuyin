@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.TxLogMapper">
+  <resultMap id="BaseResultMap" type="com.entity.TxLog">
+    <id column="Id" jdbcType="INTEGER" property="id" />
+    <result column="txer_id" jdbcType="INTEGER" property="txerId" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="amount" jdbcType="DECIMAL" property="amount" />
+    <result column="result" jdbcType="VARCHAR" property="result" />
+    <result column="school_id" jdbcType="INTEGER" property="schoolId" />
+    <result column="app_id" jdbcType="INTEGER" property="appId" />
+  </resultMap>
+</mapper>

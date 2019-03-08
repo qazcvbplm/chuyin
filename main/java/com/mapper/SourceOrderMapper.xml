@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.SourceOrderMapper">
+  <resultMap id="BaseResultMap" type="com.entity.SourceOrder">
+    <id column="Id" jdbcType="VARCHAR" property="id" />
+    <result column="app_id" jdbcType="INTEGER" property="appId" />
+    <result column="school_id" jdbcType="INTEGER" property="schoolId" />
+    <result column="open_id" jdbcType="VARCHAR" property="openId" />
+    <result column="address_name" jdbcType="VARCHAR" property="addressName" />
+    <result column="address_phone" jdbcType="VARCHAR" property="addressPhone" />
+    <result column="address_detail" jdbcType="VARCHAR" property="addressDetail" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="pay_price" jdbcType="INTEGER" property="payPrice" />
+    <result column="floor_id" jdbcType="INTEGER" property="floorId" />
+    <result column="create_time" jdbcType="VARCHAR" property="createTime" />
+    <result column="product_name" jdbcType="VARCHAR" property="productName" />
+    <result column="product_image" jdbcType="VARCHAR" property="productImage" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    Id, app_id, school_id, open_id, address_name, address_phone, address_detail, status, 
+    pay_price, floor_id, create_time, product_name, product_image
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from source_order
+    where Id = #{id,jdbcType=VARCHAR}
+  </select>
+  <insert id="insert" parameterType="com.entity.SourceOrder">
+    insert into source_order (Id, app_id, school_id, 
+      open_id, address_name, address_phone, 
+      address_detail, pay_price, 
+      floor_id, product_name, 
+      product_image)
+    values (#{id,jdbcType=VARCHAR}, #{appId,jdbcType=INTEGER}, #{schoolId,jdbcType=INTEGER}, 
+      #{openId,jdbcType=VARCHAR}, #{addressName,jdbcType=VARCHAR}, #{addressPhone,jdbcType=VARCHAR}, 
+      #{addressDetail,jdbcType=VARCHAR},#{payPrice,jdbcType=INTEGER}, 
+      #{floorId,jdbcType=INTEGER}, #{productName,jdbcType=VARCHAR}, 
+      #{productImage,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.entity.SourceOrder">
+    update source_order
+    <set>
+      <if test="appId != null">
+        app_id = #{appId,jdbcType=INTEGER},
+      </if>
+      <if test="schoolId != null">
+        school_id = #{schoolId,jdbcType=INTEGER},
+      </if>
+      <if test="openId != null">
+        open_id = #{openId,jdbcType=VARCHAR},
+      </if>
+      <if test="addressName != null">
+        address_name = #{addressName,jdbcType=VARCHAR},
+      </if>
+      <if test="addressPhone != null">
+        address_phone = #{addressPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="addressDetail != null">
+        address_detail = #{addressDetail,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="payPrice != null">
+        pay_price = #{payPrice,jdbcType=INTEGER},
+      </if>
+      <if test="floorId != null">
+        floor_id = #{floorId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="productName != null">
+        product_name = #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="productImage != null">
+        product_image = #{productImage,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where Id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.entity.SourceOrder">
+    update source_order
+    set app_id = #{appId,jdbcType=INTEGER},
+      school_id = #{schoolId,jdbcType=INTEGER},
+      open_id = #{openId,jdbcType=VARCHAR},
+      address_name = #{addressName,jdbcType=VARCHAR},
+      address_phone = #{addressPhone,jdbcType=VARCHAR},
+      address_detail = #{addressDetail,jdbcType=VARCHAR},
+      status = #{status,jdbcType=VARCHAR},
+      pay_price = #{payPrice,jdbcType=INTEGER},
+      floor_id = #{floorId,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      product_name = #{productName,jdbcType=VARCHAR},
+      product_image = #{productImage,jdbcType=VARCHAR}
+    where Id = #{id,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="find" resultMap="BaseResultMap"  parameterType="com.entity.SourceOrder">
+   select * from source_order 
+   <where>
+      <if test="appId != null">
+        app_id = #{appId,jdbcType=INTEGER}
+      </if>
+      <if test="schoolId != null">
+        and school_id = #{schoolId,jdbcType=INTEGER}
+      </if>
+      <if test="openId != null">
+        and open_id = #{openId,jdbcType=VARCHAR}
+      </if>
+      <if test="addressName != null">
+        and address_name = #{addressName,jdbcType=VARCHAR}
+      </if>
+      <if test="addressPhone != null">
+        and address_phone = #{addressPhone,jdbcType=VARCHAR}
+      </if>
+      <if test="status != null">
+        and status = #{status,jdbcType=VARCHAR}
+      </if>
+      <if test="floorId != null">
+        floor_id = #{floorId,jdbcType=INTEGER}
+      </if>
+   </where>
+	      order by create_time desc
+	    <if test="page!=null and size!=null">
+	      limit #{page},#{size}
+	    </if>
+  </select>
+  
+  <select id="count" resultType="int"  parameterType="com.entity.SourceOrder">
+   select count(*) from source_order 
+   <where>
+      <if test="appId != null">
+        app_id = #{appId,jdbcType=INTEGER}
+      </if>
+      <if test="schoolId != null">
+        and school_id = #{schoolId,jdbcType=INTEGER}
+      </if>
+      <if test="openId != null">
+        and open_id = #{openId,jdbcType=VARCHAR}
+      </if>
+      <if test="addressName != null">
+        and address_name = #{addressName,jdbcType=VARCHAR}
+      </if>
+      <if test="addressPhone != null">
+        and address_phone = #{addressPhone,jdbcType=VARCHAR}
+      </if>
+      <if test="status != null">
+        and status = #{status,jdbcType=VARCHAR}
+      </if>
+      <if test="floorId != null">
+        floor_id = #{floorId,jdbcType=INTEGER}
+      </if>
+   </where>
+  </select>
+</mapper>

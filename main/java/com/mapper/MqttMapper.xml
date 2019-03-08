@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.MqttMapper">
+  <resultMap id="BaseResultMap" type="com.entity.Mqtt">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="enable" jdbcType="BIT" property="enable" />
+    <result column="total" jdbcType="DECIMAL" property="total" />
+    <result column="per" jdbcType="DECIMAL" property="per" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, enable, total, per
+  </sql>
+  
+  
+  <update id="incr">
+  update mqtt set total=total+per where id=1
+  </update>
+  
+  <update id="tx">
+  update mqtt set total=0,tx=0 where id=1 and tx=1 and total>0
+  </update>
+</mapper>

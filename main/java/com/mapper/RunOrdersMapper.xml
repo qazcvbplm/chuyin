@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.RunOrdersMapper">
+  <resultMap id="BaseResultMap" type="com.entity.RunOrders">
+    <id column="Id" jdbcType="VARCHAR" property="id" />
+      <result column="app_id" jdbcType="INTEGER" property="appId" />
+    <result column="address_name" jdbcType="VARCHAR" property="addressName" />
+    <result column="address_phone" jdbcType="VARCHAR" property="addressPhone" />
+    <result column="address_detail" jdbcType="VARCHAR" property="addressDetail" />
+    <result column="school_id" jdbcType="INTEGER" property="schoolId" />
+    <result column="open_id" jdbcType="VARCHAR" property="openId" />
+    <result column="total_price" jdbcType="DECIMAL" property="totalPrice" />
+    <result column="create_time" jdbcType="VARCHAR" property="createTime" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="reserve_time" jdbcType="VARCHAR" property="reserveTime" />
+    <result column="floor_id" jdbcType="INTEGER" property="floorId" />
+    <result column="pay_time" jdbcType="VARCHAR" property="payTime" />
+     <result column="pay_time_long"  property="payTimeLong" />
+    <result column="sender_name" jdbcType="VARCHAR" property="senderName" />
+    <result column="sender_phone" jdbcType="VARCHAR" property="senderPhone" />
+    <result column="sender_id" jdbcType="INTEGER" property="senderId" />
+    <result column="typ" jdbcType="VARCHAR" property="typ" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+     <result column="payment" jdbcType="VARCHAR" property="payment" />
+    <result column="evaluate_flag" jdbcType="INTEGER" property="evaluateFlag" />
+  </resultMap>
+  
+   <select id="countBySchoolId" parameterType="int" resultType="int">
+  select count(*) from run_orders where school_id=#{schoolId} and day(create_time)=day(now()) and status!='待付款'
+  </select>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    *
+    from run_orders
+    where Id = #{id,jdbcType=VARCHAR}
+  </select>
+  <insert id="insert" parameterType="com.entity.RunOrders">
+    insert into run_orders (Id,app_id, address_name, address_phone, 
+      address_detail, school_id, open_id, 
+      total_price, create_time, remark, 
+      content, reserve_time, floor_id
+      )
+    values (#{id,jdbcType=VARCHAR},#{appId}, #{addressName,jdbcType=VARCHAR}, #{addressPhone,jdbcType=VARCHAR}, 
+      #{addressDetail,jdbcType=VARCHAR}, #{schoolId,jdbcType=INTEGER}, #{openId,jdbcType=VARCHAR}, 
+      #{totalPrice,jdbcType=DECIMAL},now(), #{remark,jdbcType=VARCHAR}, 
+      #{content,jdbcType=VARCHAR}, #{reserveTime,jdbcType=VARCHAR}, #{floorId,jdbcType=INTEGER} 
+      )
+  </insert>
+  
+  <select id="count" parameterType="com.entity.Orders" resultType="int">
+   select count(*) from run_orders
+    <where>
+      <if test="id != null">
+        and id = #{id}
+      </if>
+       <if test="status != null">
+        and status = #{status}
+      </if>
+       <if test="addressName != null">
+        and address_name = #{addressName}
+      </if>
+      <if test="schoolId != null">
+        and school_id = #{schoolId,jdbcType=INTEGER}
+      </if>
+      <if test="openId != null">
+        and open_id = #{openId,jdbcType=VARCHAR}
+      </if>
+       <if test="floorId != null">
+        and floor_id = #{floorId,jdbcType=INTEGER}
+      </if>
+      <if test="senderId != null">
+        and sender_id = #{senderId,jdbcType=INTEGER}
+      </if>
+       <if test="createTime != null">
+        and create_time like #{createTime,jdbcType=TIMESTAMP}
+      </if>
+    </where>
+  </select>
+  
+   <select id="find" resultMap="BaseResultMap"  parameterType="com.entity.RunOrders">
+    select 
+    run_orders.*
+    from run_orders
+    <where>
+      <if test="id != null">
+        and id = #{id}
+      </if>
+       <if test="status != null">
+        and status = #{status}
+      </if>
+       <if test="addressName != null">
+        and address_name = #{addressName}
+      </if>
+      <if test="schoolId != null">
+        and school_id = #{schoolId,jdbcType=INTEGER}
+      </if>
+      <if test="openId != null">
+        and open_id = #{openId,jdbcType=VARCHAR}
+      </if>
+       <if test="floorId != null">
+        and floor_id = #{floorId,jdbcType=INTEGER}
+      </if>
+      <if test="senderId != null">
+        and sender_id = #{senderId,jdbcType=INTEGER}
+      </if>
+       <if test="createTime != null">
+        and create_time like #{createTime,jdbcType=TIMESTAMP}
+      </if>
+    </where>
+    order by create_time desc
+     <if test="page!=null and size!=null">
+	      limit #{page},#{size}
+	 </if>
+  </select>
+  
+  <select id="findBySenderRun" parameterType="com.entity.Sender" resultMap="BaseResultMap">
+   select * from run_orders
+    <if test="orderBy=='待接手'">
+     where status=#{orderBy} 
+      and floor_id in (${floorIds}) 
+    </if>
+     <if test="orderBy=='配送员已接手' or orderBy=='已完成'">
+      where  sender_id =#{id} and status=#{orderBy} 
+    </if>
+    limit #{page},#{size}
+  </select>
+  
+  <update id="paySuccess" parameterType="map" >
+   update run_orders set payment=#{payment},status='待接手',pay_time=now(),pay_time_long=#{payTimeLong}  where id=#{orderId} and status='待付款'
+  </update>
+  
+  <update id="SenderAccept" parameterType="com.entity.RunOrders">
+   update run_orders set status='配送员已接手', sender_id=#{senderId} ,sender_name=#{senderName} ,sender_phone=#{senderPhone} 
+   where id=#{id} and  status='待接手'
+  </update>
+  
+  <update id="end" parameterType="string">
+   update run_orders set status='已完成' where id=#{orderId} and status='配送员已接手'
+  </update>
+  
+  <delete id="remove">
+   delete from run_orders where status='待付款'
+  </delete>
+  
+  <select id="senderStatistics" parameterType="map"  resultMap="BaseResultMap"> 
+     select id,status,sender_id,create_time,count(*) as floor_id,sum(total_price) as total_price from run_orders
+     where sender_id = #{senderId} and create_time between #{beginTime} and #{endTime} group by status  
+  </select>
+  
+   <select id="temp" parameterType="map"  resultMap="BaseResultMap"> 
+     select id,status,address_name,create_time,count(*) as floorId from run_orders 
+     where address_name = #{shopId} and create_time between #{beginTime} and #{endTime} group by status  
+  </select>
+  
+   <update id="pl" parameterType="string">
+   update run_orders set evaluate_flag=1 where id=#{id}
+  </update>
+   <update id="cancel" parameterType="string">
+   update run_orders set status='已取消' where id=#{id} and status!='已取消'
+  </update>
+  
+</mapper>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.WxUserMapper">
+  <resultMap id="BaseResultMap" type="com.entity.WxUser">
+    <id column="open_id" jdbcType="VARCHAR" property="openId" />
+    <result column="nick_name" jdbcType="VARCHAR" property="nickName" />
+    <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl" />
+    <result column="gender" jdbcType="VARCHAR" property="gender" />
+    <result column="province" jdbcType="VARCHAR" property="province" />
+    <result column="city" jdbcType="VARCHAR" property="city" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="client" jdbcType="VARCHAR" property="client" />
+      <result column="total" jdbcType="INTEGER" property="total" />
+      <result column="school_id" jdbcType="INTEGER" property="schoolId" />
+       <result column="app_id" jdbcType="INTEGER" property="appId" />
+      <association property="bell" javaType="com.entity.WxUserBell">
+      	<result column="source" jdbcType="INTEGER" property="source" />
+	    <result column="money" jdbcType="DECIMAL" property="money" />
+	    <result column="is_vip" jdbcType="INTEGER" property="isVip" />
+      </association>
+  </resultMap>
+  
+  <select id="countBySchoolId" parameterType="int" resultType="int">
+   select count(*) from wx_user where school_id=#{schoolId} and phone !=''
+  </select>
+  
+  <select id="findByschoolAndPhone" resultMap="BaseResultMap" parameterType="com.entity.WxUser">
+   select * from wx_user where school_id=#{schoolId} and phone=#{phone} 
+  </select>
+  
+  <select id="find" resultMap="BaseResultMap" parameterType="com.entity.WxUser">
+    select 
+     <if test="total==null">
+     *
+     </if>
+      <if test="total!=null">
+     count(*) as total
+     </if>
+     from wx_user
+    <where>
+      <if test="openId!=null">
+         open_id =#{openId}
+      </if>
+      <if test="appId!=null">
+         app_id =#{appId}
+      </if>
+      <if test="schoolId!=null">
+         and school_id =#{schoolId}
+      </if>
+      <if test="nickName!=null">
+         and nick_name =#{nickName}
+      </if>
+      <if test="phone!=null">
+        and phone =#{phone}
+      </if>
+    </where>
+    <if test="orderBy!=null">
+      order by #{orderBy}
+    </if>
+    <if test="page!=null and size!=null">
+      limit #{page},#{size}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    *
+    from wx_user left join wx_user_bell on concat(wx_user.open_id,'-',wx_user.phone)=wx_user_bell.phone
+    where wx_user.open_id = #{openId,jdbcType=VARCHAR}
+  </select>
+  <insert id="insert" parameterType="com.entity.WxUser">
+    insert into wx_user (open_id,client,app_id,school_id)
+    values (#{openId,jdbcType=VARCHAR}, #{client,jdbcType=VARCHAR},#{appId},#{schoolId})
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.entity.WxUser">
+    update wx_user
+    <set>
+      <if test="nickName != null">
+        nick_name = #{nickName,jdbcType=VARCHAR},
+      </if>
+      <if test="avatarUrl != null">
+        avatar_url = #{avatarUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null">
+        gender = #{gender,jdbcType=VARCHAR},
+      </if>
+      <if test="province != null">
+        province = #{province,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null">
+        city = #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+       <if test="schoolId!= null">
+        school_id = #{schoolId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where open_id = #{openId,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="findByPhone" parameterType="string" resultType="int">
+   select count(*) from wx_user where phone=#{phone}
+  </select>
+</mapper>

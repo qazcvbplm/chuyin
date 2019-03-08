@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.OrdersCompleteMapper">
+  <resultMap id="BaseResultMap" type="com.entity.OrdersComplete">
+    <id column="Id" jdbcType="INTEGER" property="id" />
+    <result column="order_id" jdbcType="VARCHAR" property="orderId" />
+    <result column="app_get_school_rate" jdbcType="DECIMAL" property="appGetSchoolRate" />
+    <result column="school_get_shop_rate" jdbcType="DECIMAL" property="schoolGetShopRate" />
+    <result column="school_get_sender_rate" jdbcType="DECIMAL" property="schoolGetSenderRate" />
+    <result column="app_get_total" jdbcType="DECIMAL" property="appGetTotal" />
+    <result column="school_get_shop" jdbcType="DECIMAL" property="schoolGetShop" />
+    <result column="school_get_sender" jdbcType="DECIMAL" property="schoolGetSender" />
+    <result column="school_get_total" jdbcType="DECIMAL" property="schoolGetTotal" />
+    <result column="sender_get_total" jdbcType="DECIMAL" property="senderGetTotal" />
+    <result column="shop_get_total" jdbcType="DECIMAL" property="shopGetTotal" />
+  </resultMap>
+</mapper>

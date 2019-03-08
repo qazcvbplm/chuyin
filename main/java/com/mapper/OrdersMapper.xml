@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.OrdersMapper">
+  <resultMap id="BaseResultMap" type="com.entity.Orders">
+    <id column="Id" jdbcType="VARCHAR" property="id" />
+      <result column="app_id" jdbcType="INTEGER" property="appId" />
+    <result column="school_id" jdbcType="INTEGER" property="schoolId" />
+    <result column="school_top_down_price" jdbcType="DECIMAL" property="schoolTopDownPrice" />
+    <result column="shop_id" jdbcType="INTEGER" property="shopId" />
+    <result column="shop_name" jdbcType="VARCHAR" property="shopName" />
+    <result column="shop_image" jdbcType="VARCHAR" property="shopImage" />
+    <result column="shop_address" jdbcType="VARCHAR" property="shopAddress" />
+    <result column="shop_phone" jdbcType="VARCHAR" property="shopPhone" />
+    <result column="open_id" jdbcType="VARCHAR" property="openId" />
+    <result column="address_name" jdbcType="VARCHAR" property="addressName" />
+    <result column="address_phone" jdbcType="VARCHAR" property="addressPhone" />
+    <result column="address_detail" jdbcType="VARCHAR" property="addressDetail" />
+    <result column="floor_id" jdbcType="INTEGER" property="floorId" />
+    <result column="typ" jdbcType="VARCHAR" property="typ" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="box_price" jdbcType="DECIMAL" property="boxPrice" />
+    <result column="send_price" jdbcType="DECIMAL" property="sendPrice" />
+    <result column="send_base_price" jdbcType="DECIMAL" property="sendBasePrice" />
+    <result column="send_add_distance_price" jdbcType="DECIMAL" property="sendAddDistancePrice" />
+    <result column="send_add_count_price" jdbcType="DECIMAL" property="sendAddCountPrice" />
+    <result column="product_price" jdbcType="DECIMAL" property="productPrice" />
+    <result column="discount_type" jdbcType="VARCHAR" property="discountType" />
+    <result column="discount_price" jdbcType="DECIMAL" property="discountPrice" />
+    <result column="pay_price" jdbcType="DECIMAL" property="payPrice" />
+    <result column="sender_name" jdbcType="VARCHAR" property="senderName" />
+    <result column="sender_phone" jdbcType="VARCHAR" property="senderPhone" />
+    <result column="sender_id" jdbcType="INTEGER" property="senderId" />
+    <result column="destination" jdbcType="INTEGER" property="destination" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="water_number" jdbcType="INTEGER" property="waterNumber" />
+     <result column="evaluate_flag" jdbcType="INTEGER" property="evaluateFlag" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="payment" jdbcType="VARCHAR" property="payment" />
+    <result column="pay_time" jdbcType="VARCHAR" property="payTime" />
+     <result column="pay_time_long"  property="payTimeLong" />
+    <result column="send_get_flag" jdbcType="INTEGER" property="sendGetFlag" />
+    <result column="end_time" jdbcType="VARCHAR" property="endTime" />
+    <result column="resever_time" jdbcType="VARCHAR" property="reseverTime" />
+    <association property="complete" javaType="com.entity.OrdersComplete">
+	    <result column="order_id" jdbcType="VARCHAR" property="orderId" />
+	    <result column="app_get_school_rate" jdbcType="DECIMAL" property="appGetSchoolRate" />
+	    <result column="school_get_shop_rate" jdbcType="DECIMAL" property="schoolGetShopRate" />
+	    <result column="school_get_sender_rate" jdbcType="DECIMAL" property="schoolGetSenderRate" />
+	    <result column="app_get_total" jdbcType="DECIMAL" property="appGetTotal" />
+	    <result column="school_get_shop" jdbcType="DECIMAL" property="schoolGetShop" />
+	    <result column="school_get_sender" jdbcType="DECIMAL" property="schoolGetSender" />
+	    <result column="school_get_total" jdbcType="DECIMAL" property="schoolGetTotal" />
+	    <result column="sender_get_total" jdbcType="DECIMAL" property="senderGetTotal" />
+	    <result column="shop_get_total" jdbcType="DECIMAL" property="shopGetTotal" />
+    </association>
+    <collection property="op" ofType="com.entity.OrderProduct"  select="com.dao.OrderProductMapper.findByOrderId" column="id">
+      <result column="product_name" jdbcType="VARCHAR" property="productName" />
+      <result column="product_image" jdbcType="VARCHAR" property="productImage" />
+      <result column="product_count" jdbcType="INTEGER" property="productCount" />
+      <result column="total_price" jdbcType="DECIMAL" property="totalPrice" />
+      <result column="attribute_name" jdbcType="VARCHAR" property="attributeName" />
+      <result column="attribute_price" jdbcType="DECIMAL" property="attributePrice" />
+    </collection>
+  </resultMap>
+  
+  <select id="countBySchoolId" parameterType="int" resultType="int">
+  select count(*) from orders where school_id=#{schoolId} and day(create_time)=day(now()) and status!='待付款'
+  </select>
+  
+  <select id="completeByShopId" parameterType="map"  resultMap="BaseResultMap">
+  select count(o.id) as remark,sum(o.pay_price) as pay_price,
+  sum(oc.app_get_total) as app_get_total,sum(oc.shop_get_total) as shop_get_total,
+  sum(oc.school_get_shop) as school_get_shop,sum(oc.school_get_sender) as school_get_sender,oc.app_get_school_rate
+  from orders o,orders_complete oc 
+  where oc.order_id=o.id and o.status='已完成' and o.shop_id=#{shopId} and create_time like #{day}
+  </select>
+  
+  <select id="completeBySchoolId" parameterType="map"  resultMap="BaseResultMap">
+  select count(o.id) as remark,sum(o.pay_price) as pay_price,sum(o.pay_price * oc.app_get_school_rate) as box_price,
+  sum(oc.app_get_total) as app_get_total,sum(oc.shop_get_total) as shop_get_total,
+  sum(oc.school_get_shop) as school_get_shop,sum(oc.school_get_sender) as school_get_sender
+  from orders o,orders_complete oc 
+  where oc.order_id=o.id and o.status='已完成' and o.school_id=#{schoolId} and create_time like #{day}
+  </select>
+  
+  
+  <update id="paySuccess" parameterType="map">
+   update orders set status='待接手',pay_time=now(),payment=#{payment},pay_time_long=#{payTimeLong} where id=#{orderId} and status='待付款'
+  </update>
+  <sql id="Base_Column_List">
+    Id, school_id, school_top_down_price, shop_id, shop_name,shop_image, shop_address, shop_phone, 
+    open_id, address_name, address_phone, address_detail, floor_id, typ, status, box_price, 
+    send_price, send_base_price, send_add_distance_price, send_add_count_price, product_price, 
+    discount_type, discount_price, pay_price, sender_name, sender_phone, sender_id, destination, 
+    remark, water_number, create_time, payment, pay_time, send_get_flag, end_time
+  </sql>
+  <select id="count" parameterType="com.entity.Orders"  resultType="int">
+   select count(*) from orders
+    <where>
+      <if test="id != null">
+        and id = #{id}
+      </if>
+       <if test="typ != null">
+        and orders.typ = #{typ}
+      </if>
+       <if test="status != null">
+        and orders.status = #{status}
+      </if>
+       <if test="addressName != null">
+        and orders.address_name = #{addressName}
+      </if>
+       <if test="shopName != null">
+        and orders.shop_name = #{shopName}
+      </if>
+      <if test="schoolId != null">
+        and school_id = #{schoolId,jdbcType=INTEGER}
+      </if>
+       <if test="shopId != null">
+        and shop_id = #{shopId,jdbcType=INTEGER}
+      </if>
+      <if test="openId != null">
+        and open_id = #{openId,jdbcType=VARCHAR}
+      </if>
+       <if test="floorId != null">
+        and floor_id = #{floorId,jdbcType=INTEGER}
+      </if>
+      <if test="senderId != null">
+        and sender_id = #{senderId,jdbcType=INTEGER}
+      </if>
+       <if test="createTime != null">
+        and create_time like #{createTime,jdbcType=TIMESTAMP}
+      </if>
+    </where>
+  </select>
+  <select id="find" resultMap="BaseResultMap"  parameterType="com.entity.Orders">
+    select 
+    orders.*
+    from orders
+    <where>
+      <if test="id != null">
+        and orders.id = #{id}
+      </if>
+      <if test="typ != null">
+        and orders.typ = #{typ}
+      </if>
+       <if test="status != null">
+        and orders.status = #{status}
+      </if>
+       <if test="addressName != null">
+        and orders.address_name = #{addressName}
+      </if>
+       <if test="shopName != null">
+        and orders.shop_name = #{shopName}
+      </if>
+      <if test="schoolId != null">
+        and orders.school_id = #{schoolId,jdbcType=INTEGER}
+      </if>
+       <if test="shopId != null">
+        and orders.shop_id = #{shopId,jdbcType=INTEGER}
+      </if>
+      <if test="openId != null">
+        and orders.open_id = #{openId,jdbcType=VARCHAR}
+      </if>
+       <if test="floorId != null">
+        and orders.floor_id = #{floorId,jdbcType=INTEGER}
+      </if>
+      <if test="senderId != null">
+        and orders.sender_id = #{senderId,jdbcType=INTEGER}
+      </if>
+       <if test="createTime != null">
+        and orders.create_time like #{createTime,jdbcType=TIMESTAMP}
+      </if>
+    </where>
+    order by create_time desc
+     <if test="page!=null and size!=null">
+	      limit #{page},#{size}
+	 </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    *
+    from orders
+    where Id = #{id,jdbcType=VARCHAR}
+  </select>
+  <insert id="insert" parameterType="com.entity.Orders">
+    insert into orders (Id,app_id, school_id, school_top_down_price, 
+      shop_id, shop_name,shop_image, shop_address, 
+      shop_phone, open_id, address_name, 
+      address_phone, address_detail, floor_id, 
+      typ, box_price, 
+      send_price, send_base_price, send_add_distance_price, 
+      send_add_count_price, product_price, discount_type, 
+      discount_price, pay_price,remark,resever_time
+      )
+    values (#{id,jdbcType=VARCHAR}, #{appId},#{schoolId,jdbcType=INTEGER}, #{schoolTopDownPrice,jdbcType=DECIMAL}, 
+      #{shopId,jdbcType=INTEGER}, #{shopName,jdbcType=VARCHAR},#{shopImage,jdbcType=VARCHAR}, #{shopAddress,jdbcType=VARCHAR}, 
+      #{shopPhone,jdbcType=VARCHAR}, #{openId,jdbcType=VARCHAR}, #{addressName,jdbcType=VARCHAR}, 
+      #{addressPhone,jdbcType=VARCHAR}, #{addressDetail,jdbcType=VARCHAR}, #{floorId,jdbcType=INTEGER}, 
+      #{typ,jdbcType=VARCHAR}, #{boxPrice,jdbcType=DECIMAL}, 
+      #{sendPrice,jdbcType=DECIMAL}, #{sendBasePrice,jdbcType=DECIMAL}, #{sendAddDistancePrice,jdbcType=DECIMAL}, 
+      #{sendAddCountPrice,jdbcType=DECIMAL}, #{productPrice,jdbcType=DECIMAL}, #{discountType,jdbcType=VARCHAR}, 
+      #{discountPrice,jdbcType=DECIMAL}, #{payPrice,jdbcType=DECIMAL},  
+      #{remark,jdbcType=VARCHAR},#{reseverTime})
+  </insert>
+ 
+ <update id="shopAcceptOrderById" parameterType="com.entity.Orders">
+  update orders set status='商家已接手',water_number=#{waterNumber} where id=#{id} and status='待接手'
+ </update>
+ 
+ <select id="waterNumber"  resultType="int" parameterType="com.entity.Orders">
+  select max(water_number) from orders where create_time like #{payTime} and shop_id =#{shopId}
+ </select>
+ 
+  <select id="findByShopByDjs" resultMap="BaseResultMap" parameterType="int">
+    select 
+    orders.*
+    from orders 
+    where shop_id =#{shopId} and status='待接手'
+  </select>
+  <select id="findByShop" parameterType="com.entity.Shop" resultMap="BaseResultMap">
+   select 
+    orders.*
+    from orders
+    where  orders.shop_id =#{id} and orders.status != '待付款' and orders.status != '已取消'
+    order by create_time desc
+     limit #{page},#{size}
+  </select>
+  
+  <select id="findBySenderTakeout" parameterType="com.entity.Sender" resultMap="BaseResultMap">
+    select * from orders
+    <if test="orderBy=='商家已接手'">
+     where status=#{orderBy} 
+      and floor_id in (${floorIds})  and shop_id in (${shopIds}) and typ ='外卖订单'
+    </if>
+     <if test="orderBy=='配送员已接手' or orderBy=='已完成'">
+      where  sender_id =#{id} and status=#{orderBy} and typ ='外卖订单'
+    </if>
+    limit #{page},#{size}
+  </select>
+  
+  <update id="SenderAccept" parameterType="com.entity.Orders">
+   update orders set status='配送员已接手', sender_id=#{senderId} ,sender_name=#{senderName} ,sender_phone=#{senderPhone} 
+   where id=#{id} and  status='商家已接手'
+  </update>
+  
+  
+  <update id="getorder" parameterType="string">
+  update orders set send_get_flag=1 where id=#{orderId}
+  </update>
+  
+  <update id="end" parameterType="com.entity.Orders">
+   update orders set end_time=now(),status='已完成'
+   <if test="sendPrice!=null">
+    ,send_price = #{sendPrice}
+   </if>
+   <if test="destination!=null">
+   ,destination=#{destination}
+   </if>
+    where id=#{id} and (status ='商家已接手' or status='配送员已接手')
+  </update>
+  
+  <delete id="remove">
+     delete from orders where status='待付款'
+  </delete>
+  
+  
+  <select id="senderStatistics" parameterType="map"  resultMap="BaseResultMap"> 
+     select id,status,sender_id,create_time,count(*) as floor_id,sum(send_price) as send_price from orders  where sender_id = #{senderId} and create_time between #{beginTime} and #{endTime} group by status  
+  </select>
+  
+  <update id="pl" parameterType="string">
+   update orders set evaluate_flag=1 where id=#{id}
+  </update>
+  
+  <update id="cancel" parameterType="string">
+    update orders set status='已取消' where status !='已取消' and id=#{id}
+  </update>
+  
+</mapper>

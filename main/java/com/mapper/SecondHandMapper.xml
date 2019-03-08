@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.SecondHandMapper">
+  <resultMap id="BaseResultMap" type="com.entity.SecondHand">
+    <id column="Id" jdbcType="INTEGER" property="id" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="nick_name" jdbcType="VARCHAR" property="nickName" />
+    <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl" />
+    <result column="open_id" jdbcType="VARCHAR" property="openId" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="is_show" jdbcType="INTEGER" property="isShow" />
+    <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
+    <result column="price" jdbcType="DECIMAL" property="price" />
+    <result column="wx_number" jdbcType="VARCHAR" property="wxNumber" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="category" jdbcType="VARCHAR" property="category" />
+    <result column="school_id" jdbcType="INTEGER" property="schoolId" />
+    <result column="image" jdbcType="VARCHAR" property="image" />
+    <result column="create_time" jdbcType="VARCHAR" property="createTime" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.entity.SecondHand">
+    <result column="text" jdbcType="LONGVARCHAR" property="text" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    Id, title, nick_name, avatar_url, open_id, content, is_show, is_delete, price, wx_number, 
+    phone, category, school_id, image
+  </sql>
+  <sql id="Blob_Column_List">
+    text
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from second_hand
+    where Id = #{id,jdbcType=INTEGER}
+  </select>
+  <insert id="insert" parameterType="com.entity.SecondHand">
+    insert into second_hand (Id, title, nick_name, 
+      avatar_url, open_id, content, 
+      price, 
+      wx_number, phone, category, 
+      school_id, image, text
+      )
+    values (#{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{nickName,jdbcType=VARCHAR}, 
+      #{avatarUrl,jdbcType=VARCHAR}, #{openId,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, 
+       #{price,jdbcType=DECIMAL}, 
+      #{wxNumber,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{category,jdbcType=VARCHAR}, 
+      #{schoolId,jdbcType=INTEGER}, #{image,jdbcType=VARCHAR}, #{text,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.entity.SecondHand">
+    update second_hand
+    <set>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="nickName != null">
+        nick_name = #{nickName,jdbcType=VARCHAR},
+      </if>
+      <if test="avatarUrl != null">
+        avatar_url = #{avatarUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="openId != null">
+        open_id = #{openId,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="isShow != null">
+        is_show = #{isShow,jdbcType=INTEGER},
+      </if>
+      <if test="isDelete != null">
+        is_delete = #{isDelete,jdbcType=INTEGER},
+      </if>
+      <if test="price != null">
+        price = #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="wxNumber != null">
+        wx_number = #{wxNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="category != null">
+        category = #{category,jdbcType=VARCHAR},
+      </if>
+      <if test="schoolId != null">
+        school_id = #{schoolId,jdbcType=INTEGER},
+      </if>
+      <if test="image != null">
+        image = #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="text != null">
+        text = #{text,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where Id = #{id,jdbcType=INTEGER}
+    
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.entity.SecondHand">
+    update second_hand
+    set title = #{title,jdbcType=VARCHAR},
+      nick_name = #{nickName,jdbcType=VARCHAR},
+      avatar_url = #{avatarUrl,jdbcType=VARCHAR},
+      open_id = #{openId,jdbcType=VARCHAR},
+      content = #{content,jdbcType=VARCHAR},
+      is_show = #{isShow,jdbcType=INTEGER},
+      is_delete = #{isDelete,jdbcType=INTEGER},
+      price = #{price,jdbcType=DECIMAL},
+      wx_number = #{wxNumber,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      category = #{category,jdbcType=VARCHAR},
+      school_id = #{schoolId,jdbcType=INTEGER},
+      image = #{image,jdbcType=VARCHAR},
+      text = #{text,jdbcType=LONGVARCHAR}
+    where Id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.entity.SecondHand">
+    update second_hand
+    set title = #{title,jdbcType=VARCHAR},
+      nick_name = #{nickName,jdbcType=VARCHAR},
+      avatar_url = #{avatarUrl,jdbcType=VARCHAR},
+      open_id = #{openId,jdbcType=VARCHAR},
+      content = #{content,jdbcType=VARCHAR},
+      is_show = #{isShow,jdbcType=INTEGER},
+      is_delete = #{isDelete,jdbcType=INTEGER},
+      price = #{price,jdbcType=DECIMAL},
+      wx_number = #{wxNumber,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      category = #{category,jdbcType=VARCHAR},
+      school_id = #{schoolId,jdbcType=INTEGER},
+      image = #{image,jdbcType=VARCHAR}
+    where Id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <select id="count" parameterType="com.entity.SecondHand"  resultType="int">
+    select count(*) from second_hand
+  <where>
+       is_delete=0
+    <if test="schoolId != null">
+        and school_id = #{schoolId,jdbcType=INTEGER}
+    </if>
+    <if test="category != null">
+        and category = #{category,jdbcType=VARCHAR}
+      </if>
+       <if test="openId != null">
+        and open_id = #{openId,jdbcType=VARCHAR}
+      </if>
+       <if test="isShow != null">
+        and is_show = #{isShow,jdbcType=INTEGER}
+      </if>
+  </where>
+  </select>
+  
+  <select id="find" parameterType="com.entity.SecondHand"  resultMap="BaseResultMap">
+    select * from second_hand
+  <where>
+       is_delete=0
+    <if test="schoolId != null">
+        and school_id = #{schoolId,jdbcType=INTEGER}
+    </if>
+    <if test="category != null">
+        and category = #{category,jdbcType=VARCHAR}
+      </if>
+       <if test="openId != null">
+        and open_id = #{openId,jdbcType=VARCHAR}
+      </if>
+       <if test="isShow != null">
+        and is_show = #{isShow,jdbcType=INTEGER}
+      </if>
+  </where>
+	      order by create_time desc
+   <if test="page!=null and size!=null">
+	      limit #{page},#{size}
+	</if>
+  </select>
+</mapper>
