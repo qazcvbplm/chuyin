@@ -1,5 +1,7 @@
 package com.serviceimple;
 
+import com.alibaba.fastjson.JSON;
+import com.config.RedisConfig;
 import com.dao.*;
 import com.entity.*;
 import com.redis.message.RedisUtil;
@@ -113,6 +115,7 @@ public class OrdersServiceImple implements OrdersService {
 		int rs=ordersMapper.paySuccess(map);
 		if(rs==1){
 			cache.takeoutCountadd(orders.getSchoolId());
+            stringRedisTemplate.convertAndSend(RedisConfig.SOCKET, JSON.toJSONString(orders));
 		}
 		return rs;
 	}
