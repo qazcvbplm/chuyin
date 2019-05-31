@@ -9,8 +9,10 @@ public interface SlideMapper {
     int insert(Slide record);
 
     int insertSelective(Slide record);
+    
+    
 
-    Slide selectByPrimaryKey(Integer id);
+    Slide findById(Integer id);
 
     int updateByPrimaryKeySelective(Slide record);
 

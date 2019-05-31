@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,6 +34,8 @@ public class SenderController {
 
 	@Autowired
 	private SenderService senderService;
+	@Autowired
+	private StringRedisTemplate cache;
 	
 	@ApiOperation(value="添加",httpMethod="POST")
 	@PostMapping("add")
@@ -65,6 +68,9 @@ public class SenderController {
 	@PostMapping("update")
 	public ResponseObject update(HttpServletRequest request,HttpServletResponse response,Sender sender){
 		              int i=senderService.update(sender);
+		              if(Boolean.parseBoolean(cache.opsForValue().get("cache"))&&i>0){
+		            	  cache.boundHashOps("SENDER").delete(sender.getId()+"");
+		              }
 		              return new ResponseObject(true, "更新"+i+"条记录");
 	}
 	
@@ -152,6 +158,17 @@ public class SenderController {
 	      return new ResponseObject(false, "金额至少大于1");
 	    }
 	    int result = this.senderService.tx(senderId, amount);
+	    if (result == 1) {
+	      return new ResponseObject(true, "提现成功");
+	    }
+	    return new ResponseObject(false, "提现失败");
+	  }
+	 
+	 @ApiOperation(value="配送员提现2", httpMethod="POST")
+	  @PostMapping({"sendertx2"})
+	  public ResponseObject sendertx2(HttpServletRequest request, HttpServletResponse response, @RequestParam String userId, @RequestParam String senderId)
+	  {
+	    int result = this.senderService.tx2(senderId, userId);
 	    if (result == 1) {
 	      return new ResponseObject(true, "提现成功");
 	    }

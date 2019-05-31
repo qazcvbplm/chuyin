@@ -26,4 +26,8 @@ public interface WxUserMapper {
 
 	int countBySchoolId(int schoolId);
 
+	List<WxUser> findByPhoneGZH(String query);
+
+	WxUser findGzh(String phone);
+
 }

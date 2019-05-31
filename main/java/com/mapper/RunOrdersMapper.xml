@@ -123,6 +123,9 @@
     </if>
      <if test="orderBy=='配送员已接手' or orderBy=='已完成'">
       where  sender_id =#{id} and status=#{orderBy} 
+      <if test="orderBy=='已完成'">
+      order by create_time desc
+      </if>
     </if>
     limit #{page},#{size}
   </select>

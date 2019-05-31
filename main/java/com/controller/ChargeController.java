@@ -56,12 +56,12 @@ public class ChargeController {
 		              return new ResponseObject(true, "移除"+i+"条记录");
 	}
 	
-	@ApiOperation(value="按照appid统计",httpMethod="POST")
+	/*@ApiOperation(value="按照appid统计",httpMethod="POST")
 	@PostMapping("tj")
 	public ResponseObject tj(HttpServletRequest request,HttpServletResponse response,int appId){
 		              ChargeLog rs=chargeLogMapper.tj(appId);
 		              return new ResponseObject(true, "ok").push("charge", rs.getPay()).push("send", rs.getSend()).push("surplus",chargeLogMapper.surplus(appId));
-	}
+	}*/
 	
 	
 	

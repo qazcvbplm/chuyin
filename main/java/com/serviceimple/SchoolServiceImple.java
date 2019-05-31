@@ -103,6 +103,11 @@ public class SchoolServiceImple implements SchoolService{
 		}
 		
 	}
+
+	@Override
+	public void chargeUse(Map<String, Object> map) {
+      schoolMapper.chargeUse(map);		
+	}
 	
 	
 }

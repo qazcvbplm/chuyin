@@ -1,8 +1,27 @@
 package com.controller;
 
+import java.io.File;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.alibaba.fastjson.JSON;
 import com.dto.SenderTj;
 import com.dto.ShopTj;
 import com.entity.FullCut;
+import com.entity.Orders;
 import com.entity.School;
 import com.entity.Shop;
 import com.entity.ShopOpenTime;
@@ -12,17 +31,9 @@ import com.service.ShopService;
 import com.util.ResponseObject;
 import com.util.Util;
 import com.wxutil.WXUtil;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import java.io.File;
-import java.util.List;
 
 @RestController
 @Api(tags="店铺模块")
@@ -37,6 +48,11 @@ public class ShopController {
     private AuthController auth;
 	/* @Value("${barcode.path}")
 	private  String barcodepath;*/
+    @Autowired
+	private StringRedisTemplate cache;
+    
+  
+    
 	
 	@ApiOperation(value="添加",httpMethod="POST")
 	@PostMapping("add")
@@ -49,10 +65,19 @@ public class ShopController {
 	
 	
 	@ApiOperation(value="查询",httpMethod="POST")
-	@PostMapping("find")
+	@RequestMapping("find")
 	public ResponseObject add(HttpServletRequest request,HttpServletResponse response,Shop shop){
-		              List<Shop> list = shopService.find(shop);
-		              return new ResponseObject(true, "ok").push("list", list).push("total", shopService.count(shop));
+		            /*  String rs=null;
+		              List<Shop> list=null;
+			      	  String key=shop.toString();
+			      	  if((rs=cache.opsForValue().get(key))==null){
+			      			list=shopService.find(shop);
+			      			cache.opsForValue().set(key, JSON.toJSONString(list),5,TimeUnit.MINUTES);
+			      	  }else{
+			      		  list=(List<Shop>) JSON.parse(cache.opsForValue().get(key));
+			      	  }*/
+		              int count = shopService.count(shop);
+		              return new ResponseObject(true, "ok").push("list", shopService.find(shop)).push("total", count);
 	}
 	
 	@ApiOperation(value="更新",httpMethod="POST")

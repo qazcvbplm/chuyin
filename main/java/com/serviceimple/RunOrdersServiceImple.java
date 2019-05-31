@@ -3,6 +3,7 @@ package com.serviceimple;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,10 +26,12 @@ import com.entity.RunOrders;
 import com.entity.School;
 import com.entity.Shop;
 import com.entity.WxUser;
+import com.entity.WxUserBell;
 import com.redis.message.RedisUtil;
 import com.service.RunOrdersService;
 import com.wx.refund.RefundUtil;
 import com.wxutil.AmountUtils;
+import com.wxutil.WxGUtil;
 
 @Service
 public class RunOrdersServiceImple implements RunOrdersService{
@@ -95,6 +98,21 @@ public class RunOrdersServiceImple implements RunOrdersService{
 			if(paySuccess( orders.getId(),"余额支付")==0){
 				throw new RuntimeException("订单状态异常");
 			}
+			  WxUserBell userbell= wxUserBellMapper.selectByPrimaryKey(user.getOpenId()+"-"+user.getPhone());
+	       	  WxUser wxGUser=wxUserMapper.findGzh(user.getPhone());
+	       	  if(wxGUser!=null){
+	       		  Map<String,String> mb=new HashMap<>();
+	       		  mb.put("touser", wxGUser.getOpenId());
+	       		  mb.put("template_id", "JlaWQafk6M4M2FIh6s7kn30yPdy2Cd9k2qtG6o4SuDk");
+	       		  mb.put("data_first", " 您的会员帐户余额有变动！");
+	       		  mb.put("data_keyword1",  "暂无");
+	       		  mb.put("data_keyword2", "-"+orders.getTotalPrice());
+	       		  mb.put("data_keyword3",  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+	       		  mb.put("data_keyword4",  "消费");
+	       		  mb.put("data_keyword5", userbell.getMoney()+"");
+	       		  mb.put("data_remark", "如有疑问请在小程序内联系客服人员！");
+	       		  WxGUtil.snedM(mb);
+	       	  }
 			return 1;
 		}else{
 			throw new RuntimeException("余额不足");

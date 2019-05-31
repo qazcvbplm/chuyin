@@ -25,6 +25,7 @@ public class HttpRequest {
         try {
             String urlNameString = url + "?" + param;
             URL realUrl = new URL(urlNameString);
+            System.out.println(realUrl);
             // 打开和URL之间的连接
             URLConnection connection = realUrl.openConnection();
             // 设置通用的请求属性

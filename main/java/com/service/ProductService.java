@@ -22,4 +22,7 @@ public interface ProductService {
 
 	int removea(int id);
 
+	void sale(List<Integer> pids, List<Integer> counts);
+
+
 }

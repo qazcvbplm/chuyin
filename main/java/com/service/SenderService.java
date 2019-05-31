@@ -43,4 +43,6 @@ public interface SenderService {
 
 	int finddsh(int schoolId);
 
+	int tx2(String senderId, String userId);
+
 }

@@ -39,7 +39,7 @@ public class Orders extends Base{
     @NotNull
     private Integer floorId;
     @NotBlank
-    @Pattern(regexp="外卖订单|堂食订单|跑腿订单")
+    @Pattern(regexp="外卖订单|堂食订单|跑腿订单|自取订单")
     private String typ;
 
     private String status;
@@ -159,7 +159,7 @@ public class Orders extends Base{
 			}
 		}
 		//计算餐盒费
-		if(this.typ.equals("外卖订单")||this.typ.equals("堂食订单")){
+		if(this.typ.equals("外卖订单")||this.typ.equals("自取订单")){
 			this.boxPrice=shop.getBoxPrice().multiply(new BigDecimal(boxcount));
 		}else{
 			this.boxPrice=new BigDecimal(0);

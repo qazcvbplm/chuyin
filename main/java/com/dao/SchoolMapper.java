@@ -1,5 +1,6 @@
 package com.dao;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -20,11 +21,13 @@ public interface SchoolMapper {
 
 	School login(School school);
 
-
 	int endOrder(Map<String, Object> map);
 
 	int sendertx(Map<String, Object> map);
 
 	int tx(Map<String, Object> map);
+	
+	int charge(Map<String,Object> map);
 
+	int chargeUse(Map<String,Object> map);
 }

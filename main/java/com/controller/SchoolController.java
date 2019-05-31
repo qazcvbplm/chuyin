@@ -106,14 +106,21 @@ public class SchoolController {
 	@ApiOperation(value="计算额外距离",httpMethod="POST")
 	@PostMapping("extra_send_price")
 	public BigDecimal extra_send_price(HttpServletRequest request,HttpServletResponse response,int schoolId,String origin,String des){
-		   School school=schoolService.findById(schoolId);
-		   int distance=BaiduUtil.DistanceAll(origin, des);
-			if(distance>school.getSendMaxDistance()){
-				int per=(distance/school.getSendPerOut())+1;
-				return new BigDecimal(per).multiply(school.getSendPerMoney());
-			}else{
-				return new BigDecimal(0);
-			}
+		int distance=0;
+		if(stringRedisTemplate.boundHashOps("extra_send_price").get(origin+","+des)!=null){
+			distance= Integer.valueOf(stringRedisTemplate.boundHashOps("extra_send_price").get(origin+","+des).toString());
+		}else{
+			distance=BaiduUtil.DistanceAll(origin, des);
+			stringRedisTemplate.boundHashOps("extra_send_price").put(origin+","+des, distance+"");
+		}
+		School school=schoolService.findById(schoolId);
+		if(distance>school.getSendMaxDistance()){
+			int per=(distance/school.getSendPerOut())+1;
+			BigDecimal rs=new BigDecimal(per).multiply(school.getSendPerMoney());
+			return rs;
+		}else{
+			return new BigDecimal(0);
+		}
    }
 	
 	@ApiOperation(value="代理提现",httpMethod="POST")

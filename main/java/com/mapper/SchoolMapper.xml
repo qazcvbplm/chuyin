@@ -24,14 +24,27 @@
     <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
      <result column="enable_takeout" jdbcType="INTEGER" property="enableTakeout" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="sender_all_tx" jdbcType="DECIMAL" property="senderAllTx" />
+    <result column="user_charge" jdbcType="DECIMAL" property="userCharge" />
+    <result column="user_charge_send" jdbcType="DECIMAL" property="userChargeSend" />
+    <result column="user_bell_all" jdbcType="DECIMAL" property="userBellAll" />
   </resultMap>
+  
+  <update id="charge" parameterType="map" >
+   update school set user_charge=user_charge+#{charge},
+   user_charge_send=user_charge_send+#{send},user_bell_all=user_bell_all+#{charge}+#{send} where id=#{schoolId}
+  </update>
+  
+  <update id="chargeUse" parameterType="map" >
+   update school set user_bell_all=user_bell_all-#{amount} where id=#{schoolId}
+  </update>
   
    <update id="tx" parameterType="map">
    update school set money=money-#{amount} where id=#{schoolId} and money >= #{amount}
   </update>
   
   <update id="sendertx" parameterType="map">
-   update school set sender_money=sender_money-#{amount} where id=#{schoolId}
+   update school set sender_money=sender_money-#{amount},sender_all_tx=sender_all_tx+#{amount} where id=#{schoolId}
   </update>
   
   <update id="endOrder"  parameterType="map">
@@ -39,7 +52,7 @@
   </update>
   
   <select id="login" resultMap="BaseResultMap"  parameterType="com.entity.School">
-   select * from school where login_name=#{loginName} and login_pass_word=#{loginPassWord}
+   select * from school where login_name=#{loginName} and login_pass_word=#{loginPassWord} and is_delete=0
   </select>
   <select id="find" resultMap="BaseResultMap" parameterType="com.entity.School">
     select 

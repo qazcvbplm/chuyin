@@ -13,9 +13,9 @@
     Id, orderId, content, core, create_time
   </sql>
 
-  <select id="findByShopId" resultMap="BaseResultMap" parameterType="int">
+  <select id="findByShopId" resultMap="BaseResultMap" parameterType="map">
 
-    select * from evaluate,orders where orders.id=evaluate.orderId AND orders.shop_id=#{shopId}
+    select * from evaluate,orders where orders.id=evaluate.orderId AND orders.shop_id=#{shopId} order by evaluate.id desc  limit #{page},#{size}
   </select>
 
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">

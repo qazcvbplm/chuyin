@@ -20,6 +20,14 @@
       </association>
   </resultMap>
   
+  <select id="findGzh" parameterType="string" resultMap="BaseResultMap">
+  select * from wx_user where phone=#{phone} and client='微信公众号'
+  </select>
+  
+  <select id="findByPhoneGZH" parameterType="string" resultMap="BaseResultMap">
+     select * from wx_user where client!='微信公众号' and phone=#{phone} and school_id!=10
+  </select>
+  
   <select id="countBySchoolId" parameterType="int" resultType="int">
    select count(*) from wx_user where school_id=#{schoolId} and phone !=''
   </select>

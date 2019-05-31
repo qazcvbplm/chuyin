@@ -68,19 +68,20 @@
   </select>
   
   <select id="completeByShopId" parameterType="map"  resultMap="BaseResultMap">
-  select count(o.id) as remark,sum(o.pay_price) as pay_price,
-  sum(oc.app_get_total) as app_get_total,sum(oc.shop_get_total) as shop_get_total,
+  select count(o.id) as remark,sum(o.pay_price) as pay_price,sum(box_price) as box_price,sum(send_price) as send_price,sum(product_price) as product_price
+  ,sum(oc.app_get_total) as app_get_total,sum(oc.shop_get_total) as shop_get_total,
   sum(oc.school_get_shop) as school_get_shop,sum(oc.school_get_sender) as school_get_sender,oc.app_get_school_rate
   from orders o,orders_complete oc 
-  where oc.order_id=o.id and o.status='已完成' and o.shop_id=#{shopId} and create_time like #{day}
+  where oc.order_id=o.id and (o.status='已完成' or o.status='商家已接手' or o.status='配送员已接手') and o.shop_id=#{shopId} and end_time like #{day}
   </select>
   
   <select id="completeBySchoolId" parameterType="map"  resultMap="BaseResultMap">
-  select count(o.id) as remark,sum(o.pay_price) as pay_price,sum(o.pay_price * oc.app_get_school_rate) as box_price,
+  select count(o.id) as remark,sum(o.pay_price) as pay_price,sum(box_price) as box_price,sum(send_price) as send_price,sum(product_price) as product_price
+  ,sum(o.pay_price * oc.app_get_school_rate) as send_add_count_price,
   sum(oc.app_get_total) as app_get_total,sum(oc.shop_get_total) as shop_get_total,
   sum(oc.school_get_shop) as school_get_shop,sum(oc.school_get_sender) as school_get_sender
   from orders o,orders_complete oc 
-  where oc.order_id=o.id and o.status='已完成' and o.school_id=#{schoolId} and create_time like #{day}
+  where oc.order_id=o.id and (o.status='已完成' or o.status='商家已接手' or o.status='配送员已接手') and o.school_id=#{schoolId} and end_time like #{day}
   </select>
   
   
@@ -211,6 +212,13 @@
   select max(water_number) from orders where create_time like #{payTime} and shop_id =#{shopId}
  </select>
  
+ <select id="findAllDjs" resultMap="BaseResultMap" >
+    select 
+    orders.*
+    from orders 
+    where status='待接手'
+ </select>
+ 
   <select id="findByShopByDjs" resultMap="BaseResultMap" parameterType="int">
     select 
     orders.*
@@ -225,7 +233,14 @@
     order by create_time desc
      limit #{page},#{size}
   </select>
-  
+   <select id="findByShopYJS" parameterType="com.entity.Shop" resultMap="BaseResultMap">
+   select 
+    orders.*
+    from orders
+    where  orders.shop_id =#{id} and (orders.status = '商家已接手' or orders.status = '配送员已接手')
+    order by create_time desc
+     limit #{page},#{size}
+  </select>
   <select id="findBySenderTakeout" parameterType="com.entity.Sender" resultMap="BaseResultMap">
     select * from orders
     <if test="orderBy=='商家已接手'">
@@ -234,6 +249,9 @@
     </if>
      <if test="orderBy=='配送员已接手' or orderBy=='已完成'">
       where  sender_id =#{id} and status=#{orderBy} and typ ='外卖订单'
+      <if test="orderBy=='已完成'">
+      order by create_time desc
+      </if>
     </if>
     limit #{page},#{size}
   </select>
@@ -263,6 +281,12 @@
      delete from orders where status='待付款'
   </delete>
   
+  <select id="shopsta" parameterType="map" resultMap="BaseResultMap">
+  select (select count(*) from orders where shop_id=#{shopId} and status!='待付款' and status!='已取消' and create_time between #{beginTime} and #{endTime}) as remark,
+  sum(box_price) as box_price,sum(pay_price) as pay_price,sum(if(destination=1,send_price,send_price+school_top_down_price)) as send_price, count(*) as floor_id,sum(shop_get_total) as shop_get_total
+  from orders o,orders_complete oc 
+  where oc.order_id=o.id and shop_id=#{shopId} and status='已完成'  and create_time between #{beginTime} and #{endTime}
+  </select>
   
   <select id="senderStatistics" parameterType="map"  resultMap="BaseResultMap"> 
      select id,status,sender_id,create_time,count(*) as floor_id,sum(send_price) as send_price from orders  where sender_id = #{senderId} and create_time between #{beginTime} and #{endTime} group by status  
@@ -273,13 +297,7 @@
   </update>
   
   <update id="cancel" parameterType="string">
-    update orders set status='已取消' where status !='已取消' and id=#{id}
+    update orders set status='已取消' where status ='待接手' and id=#{id}
   </update>
-
-
-    <select id="shopsta" resultMap="BaseResultMap" parameterType="map">
-        select (select count(*) from orders where shop_id = #{shopId} and status !='待付款') as remark,sum(box_price) as box_pirce ,sum(send_price) as send_price,sum(pay_price) as pay_price,count(*) as floor_id,sum(shop_get_total) as shop_get_total
-        from orders o left join orders_complete oc on oc.order_id=o.id where o.shop_id = #{shopId} and o.create_time between #{beginTime} and #{endTime} and o.status='已完成'
-    </select>
   
 </mapper>

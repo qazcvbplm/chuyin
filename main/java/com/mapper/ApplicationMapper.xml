@@ -8,6 +8,7 @@
     <result column="money" jdbcType="DECIMAL" property="money" />
     <result column="useable_money" jdbcType="DECIMAL" property="useableMoney" />
     <result column="login_name" jdbcType="VARCHAR" property="loginName" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
     <result column="login_pass" jdbcType="VARCHAR" property="loginPass" />
     <result column="vip_takeout_discount_flag" jdbcType="INTEGER" property="vipTakeoutDiscountFlag" />
     <result column="vip_run_discount_flag" jdbcType="INTEGER" property="vipRunDiscountFlag" />
@@ -24,7 +25,7 @@
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
-    <include refid="Base_Column_List" />
+   *
     from application
     where Id = #{id,jdbcType=INTEGER}
   </select>

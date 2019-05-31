@@ -28,4 +28,8 @@ public interface ProductMapper {
 	List<Product> findByShopAllDiscount(int productCategoryId);
 
 	void sale(Map<String, Object> map);
+
+	List<Product> findin(List<Integer> pids);
+
+	int stock(Map<String, Object> map);
 }

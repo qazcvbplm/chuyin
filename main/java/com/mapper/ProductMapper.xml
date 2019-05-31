@@ -13,6 +13,8 @@
     <result column="sale" jdbcType="INTEGER" property="sale" />
     <result column="is_show" jdbcType="INTEGER" property="isShow" />
     <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
+     <result column="stock" jdbcType="INTEGER" property="stock" />
+      <result column="stock_flag" jdbcType="INTEGER" property="stockFlag" />
     <collection property="attribute" ofType="com.entity.ProductAttribute"  javaType="ArrayList">
         <result column="aid" jdbcType="INTEGER" property="id" />
 	    <result column="product_id" jdbcType="INTEGER" property="productId" />
@@ -23,6 +25,18 @@
   <update id="sale" parameterType="map">
   update  product set sale=sale+#{count} where id=#{id}
   </update>
+  
+   <update id="stock" parameterType="map">
+  update  product set stock=stock-#{count} where id=#{id} and (stock >#{count} or stock = #{count})
+  </update>
+  
+  <select id="findin" parameterType="list" resultMap="BaseResultMap">
+   select * from product where id in
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+                #{item}       
+        </foreach>   
+        and is_delete=0
+  </select>
   
   <select id="minDiscount" parameterType="int" resultType="BigDecimal">
    select min(discount) from product where shop_id=#{id} and is_delete=0 and is_show=1 and discount!=1
@@ -91,6 +105,12 @@
       </if>
       <if test="sale != null">
         sale = #{sale,jdbcType=INTEGER},
+      </if>
+        <if test="stock != null">
+        stock = #{stock,jdbcType=INTEGER},
+      </if>
+       <if test="stockFlag != null">
+        stock_flag = #{stockFlag,jdbcType=INTEGER},
       </if>
       <if test="isShow != null">
         is_show = #{isShow,jdbcType=INTEGER},

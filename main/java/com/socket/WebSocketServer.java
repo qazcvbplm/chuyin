@@ -13,8 +13,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-@ServerEndpoint(value = "/websocket/{id}")
-@Component
+//@ServerEndpoint(value = "/websocket")
+//@Component
 public class WebSocketServer {
     //静态变量，用来记录当前在线连接数。应该把它设计成线程安全的。
     private static int onlineCount = 0;
@@ -29,9 +29,9 @@ public class WebSocketServer {
     /**
      * 连接建立成功调用的方法*/
     @OnOpen
-    public void onOpen(Session session, @PathParam("id") int id) {
+    public void onOpen(Session session) {
         this.session = session;
-        this.id = id;
+        this.id = Integer.valueOf(session.getRequestParameterMap().get("id").get(0));
         webSocketSet.put(id, this);     //加入set中
         addOnlineCount();                //在线数加1
         try {

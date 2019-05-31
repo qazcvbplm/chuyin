@@ -5,7 +5,7 @@ import com.entity.Mqtt;
 
 public interface MqttMapper extends BaseMapper<Mqtt>{
 
-	void incr();
+	void incr(Integer id);
 
-	int tx();
+	int tx(Integer id);
 }

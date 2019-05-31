@@ -32,9 +32,31 @@ public class Product extends Base{
     
     private List<ProductAttribute> attribute;
     
+    private Integer stock;
+    
+    private Integer stockFlag;
+    
+    
+    
     
 
-    public List<ProductAttribute> getAttribute() {
+    public Integer getStock() {
+		return stock;
+	}
+
+	public void setStock(Integer stock) {
+		this.stock = stock;
+	}
+
+	public Integer getStockFlag() {
+		return stockFlag;
+	}
+
+	public void setStockFlag(Integer stockFlag) {
+		this.stockFlag = stockFlag;
+	}
+
+	public List<ProductAttribute> getAttribute() {
 		return attribute;
 	}
 

@@ -1,7 +1,9 @@
 package com.controller;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -72,7 +74,12 @@ public class RunOrdersController {
 			  return new ResponseObject(true, "ok").push("msg", msg);
 		 } 
 		 if(payment.equals("余额支付")){
-			 runOrdersService.pay(orders);
+			 if(runOrdersService.pay(orders)==1){
+				 Map<String,Object> map=new HashMap<>();
+				 map.put("schoolId", orders.getSchoolId());
+				 map.put("amount", orders.getTotalPrice());
+				 schoolService.chargeUse(map);
+			 }
 			 return new ResponseObject(true, orderId);
 		 }
 		 return null;

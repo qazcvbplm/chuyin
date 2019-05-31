@@ -18,6 +18,9 @@
     where school_id=#{schoolId} and is_delete=0
     order by create_time desc
   </select>
+  <select id="findById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+  select * from slide where id=#{id}
+  </select>
   <insert id="insert" parameterType="com.entity.Slide">
     insert into slide (Id, image, path, school_id)
     values (#{id,jdbcType=INTEGER}, #{image,jdbcType=VARCHAR}, #{path,jdbcType=VARCHAR}, #{schoolId,jdbcType=INTEGER})

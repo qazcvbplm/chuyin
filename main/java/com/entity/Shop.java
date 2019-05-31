@@ -296,4 +296,12 @@ public class Shop extends Base{
     public void setSort(Long sort) {
         this.sort = sort;
     }
+
+	@Override
+	public String toString() {
+		return "Shop [id=" + id + ", schoolId=" + schoolId + ", shopName=" + shopName + ","
+				+ " shopPhone=" + shopPhone+" shopCategoryId="+this.shopCategoryId+"]"+this.getPage()+","+this.getSize();
+	}
+    
+    
 }

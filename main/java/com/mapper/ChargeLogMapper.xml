@@ -31,7 +31,7 @@
   </insert>
   
   <select id="findByOpenId" resultMap="BaseResultMap"  parameterType="string">
-    select * from charge_log where open_id = #{openId}
+    select * from charge_log where open_id = #{openId} order by id desc
   </select>
   <select id="surplus" parameterType="int" resultType="BigDecimal">
    select sum(money) from wx_user,wx_user_bell where wx_user.app_id=#{appId} and wx_user_bell.phone=concat(wx_user.open_id,'-',wx_user.phone)

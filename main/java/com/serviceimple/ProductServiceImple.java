@@ -2,10 +2,11 @@ package com.serviceimple;
 
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,6 +65,25 @@ public class ProductServiceImple implements ProductService{
 	@Override
 	public int removea(int id) {
 		return productAttributeMapper.delete(id);
+	}
+
+	@Transactional
+	@Override
+	public void sale(List<Integer> pids, List<Integer> counts) {
+		int size=pids.size();
+		//List<Product> ps=productMapper.findin(pids);
+		Map<String,Object> map=new HashMap<>();
+		for(int i=0;i<size;i++){
+			Product temp=productMapper.selectByPrimaryKey(pids.get(i));
+			map.put("id", temp.getId());
+			map.put("count", counts.get(i));
+             if(temp.getStockFlag()==1){
+				if(productMapper.stock(map)!=1){
+					throw new RuntimeException("库存不足");
+				}
+			}
+		}
+		
 	}
 
 

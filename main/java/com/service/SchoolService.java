@@ -2,6 +2,7 @@ package com.service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -21,5 +22,7 @@ public interface SchoolService {
 
 
 	String tx(int schoolId, BigDecimal amount, String openId);
+
+	void chargeUse(Map<String, Object> map);
 
 }

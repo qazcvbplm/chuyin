@@ -4,14 +4,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
-
-import org.springframework.beans.factory.annotation.Value;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.google.gson.JsonObject;
 import com.thoughtworks.xstream.core.util.Base64Encoder;
 
 
@@ -48,6 +45,7 @@ public class WXUtil {
 			}
 	}
 	
+
 	/**
 	 * 获取access_token
 	 * @param appid
@@ -137,7 +135,7 @@ public class WXUtil {
      * form_id  表单id  或者支付id
      * keyword 关键字 1,2,3,4,5,6,7.。。。
      */
-   /* public static void snedM(Map<String,String> map){
+    public static void snedM(Map<String,String> map){
     	//发送模板消息
          String access_token=getAccessToken(map.get("appid"), map.get("secert"));
          JsonObject output =new JsonObject();
@@ -156,9 +154,8 @@ public class WXUtil {
          }
          output.add("data", data);
          String rs=PayUtil.httpRequest(msurl+access_token, "POST", output.toString());
-         DebugLogger.print(rs);
          String a="";
-    }*/
+    }
 
 /*	public static boolean checkFK(String appid,String mch_id,String key,String out_trade_no) {
 		  boolean rs=false;

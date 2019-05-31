@@ -15,8 +15,18 @@ public class Mqtt {
     
     private String open;
     
+    private Integer schoolId;
+    
     
 
+
+	public Integer getSchoolId() {
+		return schoolId;
+	}
+
+	public void setSchoolId(Integer schoolId) {
+		this.schoolId = schoolId;
+	}
 
 	public String getOpen() {
 		return open;

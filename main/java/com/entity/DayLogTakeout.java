@@ -31,9 +31,41 @@ public class DayLogTakeout {
 
     private String type;
     
+    private BigDecimal boxPrice;
+    
+    private BigDecimal sendPrice;
+    
+    private BigDecimal productPrice;
     
     
-    public Integer getParentId() {
+    
+    
+    
+    public BigDecimal getBoxPrice() {
+		return boxPrice;
+	}
+
+	public void setBoxPrice(BigDecimal boxPrice) {
+		this.boxPrice = boxPrice;
+	}
+
+	public BigDecimal getSendPrice() {
+		return sendPrice;
+	}
+
+	public void setSendPrice(BigDecimal sendPrice) {
+		this.sendPrice = sendPrice;
+	}
+
+	public BigDecimal getProductPrice() {
+		return productPrice;
+	}
+
+	public void setProductPrice(BigDecimal productPrice) {
+		this.productPrice = productPrice;
+	}
+
+	public Integer getParentId() {
 		return parentId;
 	}
 
@@ -61,6 +93,9 @@ public class DayLogTakeout {
 		}
 		this.type=type;
 		this.parentId=parentId;
+		this.boxPrice=order.getBoxPrice();
+		this.sendPrice=order.getSendPrice();
+		this.productPrice=order.getProductPrice();
 		return this;
 	}
 	
@@ -73,11 +108,13 @@ public class DayLogTakeout {
 		if(order.getComplete()!=null) {
 			this.parentGet=order.getComplete().getAppGetTotal();
 			this.selfGet=order.getComplete().getSchoolGetSender()
-					.add(order.getComplete().getSchoolGetShop()).subtract(order.getBoxPrice());
-					//.subtract(order.getPayPrice().multiply(order.getComplete().getAppGetSchoolRate()));
+					.add(order.getComplete().getSchoolGetShop()).subtract(order.getSendAddCountPrice());
 		}
 		this.type=type;
 		this.parentId=parentId;
+		this.boxPrice=order.getBoxPrice();
+		this.sendPrice=order.getSendPrice();
+		this.productPrice=order.getProductPrice();
 		return this;
 	}
 

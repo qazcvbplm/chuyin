@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import com.dao.LogsMapper;
 import com.dao.WxUserBellMapper;
 import com.dao.WxUserMapper;
+import com.entity.Logs;
 import com.entity.Sender;
 import com.entity.WxUser;
 import com.util.LoggerUtil;
@@ -22,7 +24,7 @@ public class WxUserListener {
 	@Autowired
 	private WxUserBellMapper wxUserBellMapper;
 	@Autowired
-	private StringRedisTemplate stringRedisTemplate;
+	private LogsMapper logsMapper;
 	
 	public void receiveMessage(String message){
 		 String[] params=message.split(",");
@@ -52,7 +54,7 @@ public class WxUserListener {
          map.put("phone", wxUser.getOpenId()+"-"+wxUser.getPhone());
          map.put("amount", amount);
          if(wxUserBellMapper.charge(map)==0){
-       	   LoggerUtil.log("配送员送达订单增加余额失败："+wxUser.getOpenId()+"-"+wxUser.getPhone()+amount.toString());
+       	   logsMapper.insert(new Logs("配送员送达订单增加余额失败："+wxUser.getOpenId()+"-"+wxUser.getPhone()+","+amount.toString()));
          }
 	}
 	

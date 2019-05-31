@@ -32,5 +32,9 @@ public interface OrdersService {
 
 	int countBySchoolId(int schoolId);
 
+	List<Orders> findByShopYJS(int shopId, int page, int size);
+
+	List<Orders> findAllDjs();
+
 
 }

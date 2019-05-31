@@ -54,9 +54,49 @@ public class School extends Base implements Serializable{
     @NotNull
     private Integer enableTakeout;
     
+    private BigDecimal senderAllTx;
+    
+    private BigDecimal userCharge;
+    
+    private BigDecimal userBellAll;
+    
+    private BigDecimal userChargeSend;
+    
     
 
-    public String getPhone() {
+    public BigDecimal getUserChargeSend() {
+		return userChargeSend;
+	}
+
+	public void setUserChargeSend(BigDecimal userChargeSend) {
+		this.userChargeSend = userChargeSend;
+	}
+
+	public BigDecimal getSenderAllTx() {
+		return senderAllTx;
+	}
+
+	public void setSenderAllTx(BigDecimal senderAllTx) {
+		this.senderAllTx = senderAllTx;
+	}
+
+	public BigDecimal getUserCharge() {
+		return userCharge;
+	}
+
+	public void setUserCharge(BigDecimal userCharge) {
+		this.userCharge = userCharge;
+	}
+
+	public BigDecimal getUserBellAll() {
+		return userBellAll;
+	}
+
+	public void setUserBellAll(BigDecimal userBellAll) {
+		this.userBellAll = userBellAll;
+	}
+
+	public String getPhone() {
 		return phone;
 	}
 

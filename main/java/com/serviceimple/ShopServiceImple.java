@@ -1,20 +1,29 @@
 package com.serviceimple;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.validation.Valid;
 
-import com.dao.*;
-import com.dto.ShopTj;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.dao.FullCutMapper;
+import com.dao.OrdersMapper;
+import com.dao.ProductMapper;
+import com.dao.RunOrdersMapper;
+import com.dao.ShopMapper;
+import com.dao.ShopOpenTimeMapper;
 import com.dto.SenderTj;
+import com.dto.ShopTj;
 import com.entity.FullCut;
 import com.entity.Orders;
 import com.entity.RunOrders;
@@ -22,7 +31,6 @@ import com.entity.Shop;
 import com.entity.ShopOpenTime;
 import com.service.ShopService;
 import com.util.ShopTimeUtil;
-import com.util.Util;
 
 @Service
 public class ShopServiceImple implements ShopService{
@@ -39,6 +47,7 @@ public class ShopServiceImple implements ShopService{
 	private ShopOpenTimeMapper shopOpenTimeMapper;
 	@Autowired
 	private OrdersMapper ordersMapper;
+	
 
 	@Override
 	public void add(Shop shop) {
@@ -52,11 +61,7 @@ public class ShopServiceImple implements ShopService{
 
 	@Override
 	public List<Shop> find(Shop shop) {
-		List<Shop> list=shopMapper.find(shop);
-		for(Shop temp:list){
-			temp.setMinDiscount(productMapper.minDiscount(temp.getId()));
-		}
-		return list;
+		return shopMapper.find(shop);
 	}
 
 	@Override
@@ -174,7 +179,8 @@ public class ShopServiceImple implements ShopService{
 		List<Orders> list=ordersMapper.shopsta(map);
 		if(list.size()>0){
            Orders temp=list.get(0);
-           ShopTj rs=new ShopTj(Integer.valueOf(temp.getRemark()),temp.getFloorId(),temp.getPayPrice(),temp.getComplete().getShopGetTotal(),temp.getBoxPrice(),temp.getSendPrice());
+           ShopTj rs=new ShopTj(Integer.valueOf(temp.getRemark()),temp.getFloorId(),temp.getPayPrice(),temp.getComplete(),temp.getBoxPrice(),temp.getSendPrice());
+           return rs;
 		}
 		return new ShopTj(0,0,new BigDecimal(0),new BigDecimal(0),new BigDecimal(0),new BigDecimal(0));
 	}

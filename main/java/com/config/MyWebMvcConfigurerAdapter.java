@@ -37,7 +37,10 @@ public class MyWebMvcConfigurerAdapter extends WebMvcConfigurerAdapter{
             .excludePathPatterns("/ops/notify/**") 
             .excludePathPatterns("/ops/shop/android/**") 
             .excludePathPatterns("/ops/orders/android/**") 
-            .excludePathPatterns("/ops/sender/nocheck/**") 
+            .excludePathPatterns("/ops/shop/nocheck/shopstatistics")
+            .excludePathPatterns("/ops/application/check")
+            .excludePathPatterns("/ops/user/wx/get/bell")
+            //.excludePathPatterns("/ops/sender/nocheck/**") 
            .excludePathPatterns("/doc.html"); //登录页
             //.excludePathPatterns("/hlladmin/user/sendEmail") //发送邮箱
             //.excludePathPatterns("/hlladmin/user/register") //用户注册

@@ -1,24 +1,48 @@
 package com.serviceimple;
 
-import com.alibaba.fastjson.JSON;
-import com.config.RedisConfig;
-import com.dao.*;
-import com.entity.*;
-import com.redis.message.RedisUtil;
-import com.service.OrdersService;
-import com.wx.refund.RefundUtil;
-import com.wxutil.AmountUtils;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.Valid;
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import com.alibaba.fastjson.JSON;
+import com.config.RedisConfig;
+import com.dao.ApplicationMapper;
+import com.dao.FloorMapper;
+import com.dao.FullCutMapper;
+import com.dao.OrderProductMapper;
+import com.dao.OrdersMapper;
+import com.dao.ProductAttributeMapper;
+import com.dao.ProductMapper;
+import com.dao.SchoolMapper;
+import com.dao.ShopMapper;
+import com.dao.WxUserBellMapper;
+import com.dao.WxUserMapper;
+import com.entity.Application;
+import com.entity.Floor;
+import com.entity.OrderProduct;
+import com.entity.Orders;
+import com.entity.Product;
+import com.entity.ProductAttribute;
+import com.entity.School;
+import com.entity.Shop;
+import com.entity.WxUser;
+import com.entity.WxUserBell;
+import com.redis.message.RedisUtil;
+import com.service.OrdersService;
+import com.wx.refund.RefundUtil;
+import com.wxutil.AmountUtils;
+import com.wxutil.WxGUtil;
 
 @Service
 public class OrdersServiceImple implements OrdersService {
@@ -66,8 +90,8 @@ public class OrdersServiceImple implements OrdersService {
 			totalcount += counts[i];
 			pt = productMapper.selectByPrimaryKey(productIds[i]);
 			pa = productAttributeMapper.selectByPrimaryKey(attributeIndex[i]);
-			OrderProduct op = new OrderProduct(productIds[i],pt.getProductName(), pt.getProductImage(), counts[i], pt.getDiscount(),
-					orders.getId(), pa.getName(), pa.getPrice());
+			OrderProduct op = new OrderProduct(productIds[i], pt.getProductName(), pt.getProductImage(), counts[i],
+					pt.getDiscount(), orders.getId(), pa.getName(), pa.getPrice());
 			orderProductMapper.insert(op);
 			orders.setProductPrice(
 					orders.getProductPrice().add(op.getAttributePrice().multiply(new BigDecimal(counts[i]))));
@@ -112,10 +136,13 @@ public class OrdersServiceImple implements OrdersService {
 		map.put("payment", payment);
 		map.put("payTimeLong", System.currentTimeMillis());
 		Orders orders = findById(orderId);
-		int rs=ordersMapper.paySuccess(map);
-		if(rs==1){
+		int rs = ordersMapper.paySuccess(map);
+		if (rs == 1) {
 			cache.takeoutCountadd(orders.getSchoolId());
-            stringRedisTemplate.convertAndSend(RedisConfig.SOCKET, JSON.toJSONString(orders));
+			String ordersStr=JSON.toJSONString(orders);
+			orders.setStatus("待接手");
+			stringRedisTemplate.boundHashOps("SHOP_DJS"+orders.getShopId()).put(orderId, JSON.toJSONString(orders));
+			stringRedisTemplate.convertAndSend(RedisConfig.SOCKET, ordersStr);
 		}
 		return rs;
 	}
@@ -138,12 +165,27 @@ public class OrdersServiceImple implements OrdersService {
 				int water = ordersMapper.waterNumber(update);
 				update.setWaterNumber(water + 1);
 			}
-			if(ordersMapper.shopAcceptOrderById(update)==1){
-				if(orders.getTyp().equals("堂食订单")){
-					stringRedisTemplate.opsForValue().set("tsout,"+orderId, "1");
-					stringRedisTemplate.expire("tsout,"+orderId, 2, TimeUnit.HOURS);
+			if (ordersMapper.shopAcceptOrderById(update) == 1) {
+				if (orders.getTyp().equals("堂食订单")||orders.getTyp().equals("自取订单")) {
+					stringRedisTemplate.opsForValue().set("tsout," + orderId, "1",2, TimeUnit.HOURS);
 				}
-				return 1;
+				WxUser wxUser = wxUserMapper.selectByPrimaryKey(orders.getOpenId());
+				School school = schoolMapper.selectByPrimaryKey(wxUser.getSchoolId());
+				WxUser wxGUser = wxUserMapper.findGzh(wxUser.getPhone());
+				if(wxGUser!=null){
+					Map<String, String> mb = new HashMap<>();
+					mb.put("touser", wxGUser.getOpenId());
+					mb.put("template_id", "AFavOESyzBju1s8Wjete1SNVUvJr-YixgR67v6yMxpg");
+					mb.put("data_first", "您的订单已被商家接手!");
+					mb.put("data_keyword1", orderId);
+					mb.put("data_keyword2", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+					mb.put("data_remark", " 商家正火速给您备餐中，请耐心等待");
+					mb.put("min_appid", school.getWxAppId());
+		       		mb.put("min_path", "pages/order/orderDetail/orderDetail?orderId=" 
+					+ orders.getId() + "&typ=" + orders.getTyp());
+					WxGUtil.snedM(mb);
+				}
+				return orders.getShopId();
 			}
 			return 0;
 		}
@@ -182,6 +224,25 @@ public class OrdersServiceImple implements OrdersService {
 			if (paySuccess(orders.getId(), "余额支付") == 0) {
 				throw new RuntimeException("订单状态异常");
 			}
+		  WxUser wxUser=wxUserMapper.selectByPrimaryKey(orders.getOpenId());
+		  WxUserBell userbell= wxUserBellMapper.selectByPrimaryKey(wxUser.getOpenId()+"-"+wxUser.getPhone());
+       	  WxUser wxGUser=wxUserMapper.findGzh(wxUser.getPhone());
+       	  if(wxGUser!=null){
+       		  Map<String,String> mb=new HashMap<>();
+       		  mb.put("touser", wxGUser.getOpenId());
+       		  mb.put("template_id", "JlaWQafk6M4M2FIh6s7kn30yPdy2Cd9k2qtG6o4SuDk");
+       		  mb.put("data_first", " 您的会员帐户余额有变动！");
+       		  mb.put("data_keyword1",  "暂无");
+       		  mb.put("data_keyword2", "-"+orders.getPayPrice());
+       		  mb.put("data_keyword3",  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+       		  mb.put("data_keyword4",  "消费");
+       		  mb.put("data_keyword5", userbell.getMoney()+"");
+       		  mb.put("data_remark", "如有疑问请在小程序内联系客服人员！");
+       		  mb.put("min_appid", school.getWxAppId());
+       		  mb.put("min_path", "pages/mine/payment/payment");
+       		  WxGUtil.snedM(mb);
+       	  }
+       //	stringRedisTemplate.boundListOps("shopDJS"+orders.getShopId()).rightPush(value);
 			return 1;
 		} else {
 			throw new RuntimeException("余额不足");
@@ -197,15 +258,15 @@ public class OrdersServiceImple implements OrdersService {
 		}
 		if (ordersMapper.cancel(id) == 1) {
 			if (orders.getPayment().equals("微信支付")) {
-				School school=schoolMapper.selectByPrimaryKey(orders.getSchoolId());
-				String fee=AmountUtils.changeY2F(orders.getPayPrice().toString());
-                int result=RefundUtil.wechatRefund1(school.getWxAppId(), school.getWxSecret(), school.getMchId(), school.getWxPayId(), school.getCertPath(),
-                		orders.getId(), fee, fee); 
-                if(result!=1){
-                	throw new RuntimeException("退款失败联系管理员");
-                }else{
-                	return 1;
-                }
+				School school = schoolMapper.selectByPrimaryKey(orders.getSchoolId());
+				String fee = AmountUtils.changeY2F(orders.getPayPrice().toString());
+				int result = RefundUtil.wechatRefund1(school.getWxAppId(), school.getWxSecret(), school.getMchId(),
+						school.getWxPayId(), school.getCertPath(), orders.getId(), fee, fee);
+				if (result != 1) {
+					throw new RuntimeException("退款失败联系管理员");
+				} else {
+					return orders.getShopId();
+				}
 			}
 			if (orders.getPayment().equals("余额支付")) {
 				Map<String, Object> map = new HashMap<>();
@@ -213,8 +274,8 @@ public class OrdersServiceImple implements OrdersService {
 				map.put("phone", user.getOpenId() + "-" + user.getPhone());
 				map.put("amount", orders.getPayPrice());
 				if (wxUserBellMapper.charge(map) == 1) {
-					return 1;
-				}else{
+					return orders.getShopId();
+				} else {
 					throw new RuntimeException("退款失败联系管理员");
 				}
 			}
@@ -225,5 +286,19 @@ public class OrdersServiceImple implements OrdersService {
 	@Override
 	public int countBySchoolId(int schoolId) {
 		return ordersMapper.countBySchoolId(schoolId);
+	}
+
+	@Override
+	public List<Orders> findByShopYJS(int shopId, int page, int size) {
+		Shop s = new Shop();
+		s.setId(shopId);
+		s.setPage(page);
+		s.setSize(size);
+		return ordersMapper.findByShopYJS(s);
+	}
+
+	@Override
+	public List<Orders> findAllDjs() {
+		return ordersMapper.findAllDjs();
 	}
 }

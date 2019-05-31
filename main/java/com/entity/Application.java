@@ -22,10 +22,21 @@ public class Application {
     private Integer vipRunDiscountFlag;
 
     private Integer maxSchoolCount;
+    
+    private String phone;
 
     private Integer isDelete;
 
-    public Integer getId() {
+    
+    public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public Integer getId() {
         return id;
     }
 

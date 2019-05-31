@@ -12,11 +12,11 @@
   </sql>
   
   
-  <update id="incr">
-  update mqtt set total=total+per where id=1
+  <update id="incr" parameterType="int">
+  update mqtt set total=total+per where id=#{id}
   </update>
   
-  <update id="tx">
-  update mqtt set total=0,tx=0 where id=1 and tx=1 and total>0
+  <update id="tx" parameterType="int">
+  update mqtt set total=0,tx=0 where id=#{id} and tx=1 and total>0
   </update>
 </mapper>
